@@ -1,0 +1,37 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p>Categorias</p>
+
+<ul>
+	{% for categoria in categorias %}
+	<li>
+			<a href="">{{ categoria }} </a> <a href="{% url 'controles:editar_categoria' categoria.id %}"> editar</a>
+			
+				
+				<ul>
+					{% for subcategoria in subcategorias %}
+					{% ifequal  subcategoria.categoria|stringformat:'s'  categoria.nome %}
+					<li>
+						<a href="">{{ subcategoria.nome }}</a><a href="{% url 'controles:delete_subcategoria' subcategoria.id %}">delete</a> 
+					</li>
+					{% endifequal %}
+					{% endfor %}
+					<li>
+						<a href="{% url 'controles:nova_subcategoria' categoria.id %}">Adicionar</a> 
+					</li>
+
+				</ul>
+			
+			
+	</li>
+
+	{% empty %}
+	<li> Não tem nenhum Categoria cadastrada ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<a href="{% url 'controles:nova_categoria' %}">Adicionar novas Categorias</a> 
+{% endblock content %}

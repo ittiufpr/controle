@@ -1,0 +1,101 @@
+{% extends "controles/base.html" %}
+{% load custom_filter %}
+{% load static %}
+
+{% block content %}
+
+
+
+{% block javascript %}
+  <script>
+
+
+  </script>
+{% endblock %} 
+
+
+<input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Search rows.." title="Type in a name">
+
+<button class="export" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
+
+<table id ="example"  class="display" style="width:100%;text-align:center">
+  <thead>
+
+   <th>
+      STATUS
+  </th>
+    <th onclick="sortTable(1)">
+    	ID
+	</th>
+
+	<th>		
+    	PROJETO		
+	</th> 
+    
+    <th>		
+    	NOME		
+	</th> 
+    <th>
+    	MARCA
+	</th>
+
+	<th>
+    	MODELO
+	</th>
+
+  <th>
+      CATEGORIA
+  </th>
+
+  <th>
+      SUBCATEGORIA
+  </th>
+
+	<th>
+    	CARACTERISTICA
+	</th>
+
+	<th>
+    	QUANTIDADE
+	</th>
+	<th>
+    	CONSUMIVEL
+	</th>
+	<th>
+    	EQUIPAMENTO
+	</th>
+  <th>
+    EDICAO
+  </th>
+  
+        </thead>
+        <tbody>
+
+  {% for item in itens %}
+  <tr>
+    <td><p hidden>{{ item.status_disponivel | status }}</p> <img  src="{{ item.status_disponivel | status }}" style="width: 16px;" alt="foo"></td>
+    <td>{{ item.id_item }}</td>
+    <td>{{ item.projeto.nome | title }}</td> 
+    <td>{{item.nome | title}}</td>
+    <td>{{item.marca | title}}</td>
+    <td>{{item.modelo | title}}</td>
+    <td>{{item.categoria | title}}</td>
+    <td>{{item.subcategoria | title}}</td>
+    <td>{{item.caracteristica}}</td>
+    <td>{{item.quantidade}}</td>
+    <td>{{item.consumivel}}</td>
+    <td>{{item.id_equipamento_pertencente.nome | title}}</td>
+    <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
+  </tr>
+  {% empty %}
+  	<p>Não tem nenhum item cadastrado ainda.</p>
+  {% endfor %}
+</tbody>
+</table>
+
+<a href="{% url 'controles:novo_item' %}">Adicionar novos itens</a> 
+
+
+
+
+{% endblock content %}

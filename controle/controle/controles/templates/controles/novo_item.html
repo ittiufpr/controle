@@ -1,0 +1,46 @@
+ {% extends "controles/base.html" %}
+{% load custom_filter %}
+{% load static %}
+
+
+{% block content %}
+
+{% block javascript %}
+  <script>
+$(document).ready( function() {
+
+$("#id_categoria").change(function () {
+      var url = $("#itemForm").attr("data-subcategorias-url");  // get the url of the load_subcategorias view
+  
+      var id_categoria = $(this).val();  // get the selected categoria ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url:url ,                    // set the url of the request (= localhost:8000/ajax/load_subcategorias/)
+        data: {
+          'id_categoria': id_categoria       // add the categoria id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_subcategorias` view function
+          $("#id_subcategoria").html(data);  // replace the contents of the subcategoria input with the data that came from the server
+        }
+      });
+
+    });
+});
+    
+  </script>
+
+{% endblock %}
+
+<form action="{% url 'controles:novo_item' %}"  id="itemForm" method='post' enctype="multipart/form-data" data-subcategorias-url="{% url 'controles:load_subcategorias' %}">
+
+	{% csrf_token %}
+	{{ form.as_p }}
+
+
+
+
+	<button name="submit">Adicionar Item</button>
+
+</form>
+
+{% endblock content %}

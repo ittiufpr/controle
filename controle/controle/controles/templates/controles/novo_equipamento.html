@@ -1,0 +1,8 @@
+<form action="{% url 'controles:novo_equipamento' %}" method='post'>
+
+	{% csrf_token %}
+	{{ form1.as_p }}
+	{{ form2.as_p }}
+	<button name="submit">Adicionar equipamento</button>
+
+</form>

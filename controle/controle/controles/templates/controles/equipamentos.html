@@ -1,0 +1,137 @@
+{% extends "controles/base.html" %}
+{% load custom_filter %}
+{% load static %}
+
+{% block content %}
+
+
+
+{% block javascript %}
+  <script>
+$(document).ready( function() {
+//quando clica sobre as linhas com a classe .data pega o id do equipamento e retorna os itens
+$(".data").click(function () {
+      var url = $("#example").attr("data-itens-equipamento-url");  // get the url of the load_subcategorias view
+      //console.log(url);
+      var teste = this;
+      var id_item = $(this).children().first().text();  // get the selected  ID click
+      //console.log("ITEM:", id_item);
+      if (document.getElementById("itens_equipamento_"+id_item)==null){ //verifica se os dados já foram carregados
+          $.ajax({                       // initialize an AJAX request
+            url:url ,                    // set the url of the request 
+            data: {
+              'id_item': id_item       // add the categoria id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return
+              console.log(data);
+                $("<tr><td id=itens_equipamento_"+ id_item + " \" colspan='10'>"+ data+ "</td></tr>").insertAfter(teste);
+      
+            }
+          });
+        }
+       else{//caso os dados já foram carregados apenas esconde ou mostra as informações
+            $("#itens_equipamento_"+ id_item).toggle();
+          }
+
+    });
+});
+
+
+  </script>
+{% endblock %} 
+
+<style>
+#panel {
+  padding: 50px;
+  display: none;
+}
+</style>
+
+<input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Search rows.." title="Type in a name">
+
+<div>
+<table id ="example"  class="display" style="width:100%;text-align:center" data-itens-equipamento-url="{% url 'controles:load_itens_equipamento' %}">
+  <thead>
+    <th onclick="sortTable(0)">
+      #
+    </th>
+    
+    <th >
+      ITTI
+    </th>
+
+    <th>    
+      UFPR   
+    </th> 
+
+    <th>    
+      Projeto   
+    </th>    
+    
+    <th>    
+      Marca  
+    </th>
+    <th>    
+      Modelo   
+    </th> 
+
+    <th>    
+      Categoria   
+    </th> 
+
+    <th>    
+      Manual    
+    </th>
+
+    <th>    
+      Nota Fiscal    
+    </th> 
+
+    <th>    
+      Ações    
+    </th> 
+     
+     
+  </thead>
+
+  <tbody>
+
+    {% for equipamento in equipamentos %}
+    <tr class="data">
+      <td >{{ equipamento.id_item.id_item }}</td>
+      <td >{{ equipamento.patrimonio_itti}}</td> 
+      <td>{{equipamento.patrimonio_ufpr}}</td>
+      <td>{{ equipamento.id_item.projeto }}</td>
+      <td>{{ equipamento.id_item.marca }}</td>
+      <td>{{ equipamento.id_item.modelo }}</td>
+      <td>{{ equipamento.id_item.categoria}}</td>
+      <td><a href="{{ equipamento.id_manual.documento.url }} ">{{ equipamento.id_manual.nome}}</a></td>
+      <td><a href="{{ equipamento.id_item.id_notafiscal.documento.url }} ">{{ equipamento.id_item.id_notafiscal.nome}}</a></td>
+      <td>
+          <a href="{% url 'controles:novo_item' %}">
+            <img src="/media/img/create.png" width="5%">
+          </a>
+          <a href="{% url 'controles:editar_item' equipamento.id_item.id_item %}">
+            <img src="/media/img/update.png" width="5%">
+          </a>
+          <a href="{% url 'controles:delete_equipamento' equipamento.id_item.id_item %}">
+            <img src="/media/img/delete.png" width="5%">
+          </a>
+
+      </td>
+    </tr>
+
+
+    {% empty %}
+    	<p>Não tem nenhum equipamento cadastrado ainda.</p>
+    {% endfor %}
+
+  </tbody>
+</table>
+</div>
+<p><a href="{% url 'controles:novo_equipamento' %}">Adicionar</a> </p>
+
+
+
+
+{% endblock content %}

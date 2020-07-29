@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+
+{% load static %}
+
+<script src="/media/js/jdos-js.js"></script>
+<body>
+
+<p>
+	<a href = "{% url 'controles:departamentos' %}"> Departamentos </a>
+	<a href = "{% url 'controles:categorias' %}"> Categorias </a>
+	<a href = "{% url 'controles:projetos' %}"> Projetos </a>
+	<a href = "{% url 'controles:notasfiscais' %}"> Notas Fiscais </a>
+	<a href = "{% url 'controles:manuais' %}"> Manuais </a>
+	<a href = "{% url 'controles:itens' %}"> Itens </a>
+	<a href = "{% url 'controles:equipamentos' %}"> Equipamentos </a>
+{% if user.is_authenticated %}
+	Olá, {{ user.username }}
+	<a href="{% url 'users:logout' %}">Log Out</a>
+{% else %}
+	<a href="{% url 'users:login' %}">Log In</a>
+{% endif %}
+<p>
+
+{% block content %}
+
+{% endblock content %}
+
+</body>
+</html>

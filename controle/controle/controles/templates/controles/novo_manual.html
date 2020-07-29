@@ -1,0 +1,7 @@
+<form action="{% url 'controles:novo_manual' %}" method='post' enctype="multipart/form-data">
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Adicionar Manual</button>
+
+</form>

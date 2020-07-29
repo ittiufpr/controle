@@ -1,0 +1,16 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p> Editar Item :</p>
+
+<form action="{% url 'controles:editar_item' item.id_item %}" method='post'>
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Salvar Mudanças</button>
+
+</form>
+
+
+{% endblock content %}

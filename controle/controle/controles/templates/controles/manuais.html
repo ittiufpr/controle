@@ -1,0 +1,20 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p>Manuais</p>
+
+<ul>
+	{% for manual in manuais %}
+	<li>
+		<a href="">{{ manual }} </a><a href="{{ manual.documento.url}} ">Ver</a><a href="{% url 'controles:delete_manual' manual.id %}">delete</a> 
+	</li>
+	{% empty %}
+	<li> Não tem nenhuma nota fiscal cadastrado ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<a href="{% url 'controles:novo_manual' %}">Adicionar novo Manual</a> 
+
+{% endblock content %}

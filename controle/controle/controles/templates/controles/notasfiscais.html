@@ -1,0 +1,20 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p>Notas Fiscais</p>
+
+<ul>
+	{% for notafiscal in notasfiscais %}
+	<li>
+		<a href="">{{ notafiscal }} </a><a href="{{ notafiscal.documento.url}} ">Ver</a><a href="{% url 'controles:delete_notafiscal' notafiscal.id %}">delete</a> 
+	</li>
+	{% empty %}
+	<li> Não tem nenhuma nota fiscal cadastrado ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<a href="{% url 'controles:nova_notafiscal' %}">Adicionar nova Nota Fiscal</a> 
+
+{% endblock content %}

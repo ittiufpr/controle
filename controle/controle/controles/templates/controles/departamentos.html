@@ -1,0 +1,21 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p>Departamentos</p>
+
+<ul>
+	{% for departamento in departamentos %}
+	<li>
+		<a href="">{{ departamento }} </a> <a href="{% url 'controles:editar_departamento' departamento.id %}">editar</a>
+		<a href="{% url 'controles:delete_departamento' departamento.id %}">delete</a> 
+	</li>
+	{% empty %}
+	<li> Não tem nenhum departamento cadastrado ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<a href="{% url 'controles:novo_departamento' %}">Adicionar novos departamentos</a> 
+
+{% endblock content %}

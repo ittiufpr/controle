@@ -1,0 +1,7 @@
+<form action="{% url 'controles:nova_notafiscal' %}" method='post' enctype="multipart/form-data">
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Adicionar Nota Fiscal</button>
+
+</form>

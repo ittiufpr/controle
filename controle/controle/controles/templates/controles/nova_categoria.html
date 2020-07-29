@@ -1,0 +1,7 @@
+<form action="{% url 'controles:nova_categoria' %}" method='post'>
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Adicionar Categoria</button>
+
+</form>
