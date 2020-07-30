@@ -9,4 +9,4 @@ from django.contrib.auth import logout
 def logout_view(request):
 	"""Faz logout do usuário."""
 	logout(request)
-	return HttpResponseRedirect(reverse('controles:departamentos'))
+	return HttpResponseRedirect(reverse('comuns:index'))

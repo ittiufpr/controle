@@ -12,9 +12,17 @@ from .models import Departamento, Projeto
 #importação de Forms
 from .forms import ProjetoForm, DepartamentoForm
 
+
+from django.http import HttpResponse
+from django.views import View
+
+#Erro to delete protected
+from django.db.models import ProtectedError
+
 def index(request):
 	return render(request,'comuns/index.html')
 
+@login_required
 # Create your views here.
 def departamentos(request):
 	""" Mostra todos os departamentos """

@@ -22,6 +22,6 @@
 		{% csrf_token %}
 		{% bootstrap_form form layout='inline' %}
 	<button name="submit" class="btn btn-primary">Log In</button>
-	<input type="hidden" name="next"  value="{% url 'controles:departamentos' %}"/>
+	<input type="hidden" name="next"  value="{% url 'comuns:index' %}"/>
 	</form>
 	{% endblock content %}

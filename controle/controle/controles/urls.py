@@ -36,7 +36,6 @@ urlpatterns = [
 	url(r'^editar_item/(?P<item_id>\d+)/$', views.editar_item, name='editar_item'),
 	url(r'^delete_item/(?P<item_id>\d+)$', views.delete_item, name='delete_item'),
 
-	url(r'^ajax/ajaxtest/$', views.ajaxtest, name='ajaxtest'),
 	url('ajax/load_subcategorias/', views.load_subcategorias, name='load_subcategorias'),
 	url('ajax/load_itens_equipamento/', views.load_itens_equipamento, name='load_itens_equipamento'),
 

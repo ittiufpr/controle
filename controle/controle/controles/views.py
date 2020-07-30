@@ -39,9 +39,6 @@ data = {
 	"tecnico":"NOME DO FUC. RESP"
 }
 
-def ajaxtest(request):
-	return render(request, 'controles/departamentos.html')
-	
 
 
 def fetch_resources(uri, rel):
@@ -230,8 +227,7 @@ def itens(request):
 	context = {'itens': itens}
 	return render(request, 'controles/itens.html', context)
 
-def ajaxtest(request):
-	return render(request, 'controles/departamentos.html')
+
 	
 def itensByName(request):
 	""" Mostra todos os departamentos """
