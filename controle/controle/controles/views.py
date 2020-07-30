@@ -9,7 +9,7 @@ from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamen
 #import Model Comuns
 from comuns.models import Projeto, Departamento
 
-from .forms import DepartamentoForm, CategoriaForm, SubcategoriaForm, ProjetoForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm
+from .forms import CategoriaForm, SubcategoriaForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm
 
 #pdf imports
 from django.template.loader import get_template, render_to_string
@@ -74,60 +74,6 @@ def DownloadPDF(request, *args, **kwargs):
 	content = "attachment; filename = %s"%(filename)
 	response['Content-Disposition'] = content
 	return response
-
-
-
-# Create your views here.
-def departamentos(request):
-	""" Mostra todos os departamentos """
-	departamentos = Departamento.objects.all().order_by('nome')
-	context = {'departamentos': departamentos}
-	return render(request, 'controles/departamentos.html', context)
-
-
-
-
-@login_required
-def novo_departamento(request):
-	"""Adiciona um novo departamento"""
-	if request.method != 'POST':
-			#Nenhum dado submetido; cria um formulário em branco
-		form = DepartamentoForm()
-	else:
-		#Dado de POST submetidos; processa os dados
-		form = DepartamentoForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:departamentos'))
-
-	context = {'form':form}
-
-	return render(request, 'controles/novo_departamento.html', context)
-
-@login_required
-def delete_departamento(request, departamento_id):
-	departamento = Departamento.objects.get(id=departamento_id)
-	departamento.delete()
-	return HttpResponseRedirect(reverse('controles:departamentos'))
-
-
-@login_required
-def editar_departamento(request, departamento_id):
-	"""Editar um departamento existente """
-	departamento = Departamento.objects.get(id=departamento_id)
-
-	if request.method !='POST':
-		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
-		form = DepartamentoForm(instance=departamento)
-	else:
-		#Dados de POST submetidos; processa os dados
-		form = DepartamentoForm(instance=departamento, data=request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:departamentos'))
-	context = {'departamento': departamento, 'form': form}
-	return render (request, 'controles/editar_departamento.html', context)
-
 
 
 # Create your views here.
@@ -208,52 +154,6 @@ def editar_categoria(request, categoria_id):
 	context = {'categoria': categoria, 'form': form}
 	return render (request, 'controles/editar_categoria.html', context)
 
-
-
-@login_required
-def projetos(request):
-	""" Mostra todos os departamentos """
-	projetos = Projeto.objects.all()
-	context = {'projetos': projetos}
-	return render(request, 'controles/projetos.html', context)
-
-
-
-
-@login_required
-def novo_projeto(request):
-	"""Adiciona um novo departamento"""
-	if request.method != 'POST':
-			#Nenhum dado submetido; cria um formulário em branco
-		form = ProjetoForm()
-	else:
-		#Dado de POST submetidos; processa os dados
-		form = ProjetoForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:projetos'))
-
-	context = {'form':form}
-
-	return render(request, 'controles/novo_projeto.html', context)
-
-
-@login_required
-def editar_projeto(request, projeto_id):
-	"""Editar um departamento existente """
-	projeto = Projeto.objects.get(id=projeto_id)
-
-	if request.method !='POST':
-		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
-		form = ProjetoForm(instance=projeto)
-	else:
-		#Dados de POST submetidos; processa os dados
-		form = ProjetoForm(instance=projeto, data=request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:projetos'))
-	context = {'projeto': projeto, 'form': form}
-	return render (request, 'controles/editar_projeto.html', context)
 
 
 @login_required

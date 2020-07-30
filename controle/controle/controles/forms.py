@@ -1,12 +1,6 @@
 from django import forms
 
-from .models import Departamento, Categoria, Subcategoria, Projeto, NotaFiscal, Manual, Item, Equipamento
-
-class DepartamentoForm(forms.ModelForm):
-	class Meta:
-		model = Departamento
-		fields = ['nome']
-		labels = {'nome':''}
+from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento
 
 class CategoriaForm(forms.ModelForm):
 	class Meta:
@@ -17,13 +11,6 @@ class SubcategoriaForm(forms.ModelForm):
 	class Meta:
 		model = Subcategoria
 		fields = ['nome']
-
-
-class ProjetoForm(forms.ModelForm):
-	class Meta:
-		model = Projeto
-		fields = ['nome','acronimo']
-
 
 class NotaFiscalForm(forms.ModelForm):
 	class Meta:

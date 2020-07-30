@@ -9,14 +9,6 @@ from .import views
 app_name = "controles"
 
 urlpatterns = [
-	#Página mostra departamentos
-	url(r'^departamentos/$', views.departamentos, name='departamentos'),
-	#Página para adicionar novos departamentos
-	url(r'^novo_departamento/$', views.novo_departamento, name='novo_departamento'),
-	#Edita um departamento
-	url(r'^editar_departamento/(?P<departamento_id>\d+)/$', views.editar_departamento, name='editar_departamento'),
-
-	url(r'^delete_departamento/(?P<departamento_id>\d+)$', views.delete_departamento, name='delete_departamento'),
 
 	url(r'^categorias/$', views.categorias, name='categorias'),
 	url(r'^nova_categoria/$', views.nova_categoria, name='nova_categoria'),
@@ -24,10 +16,6 @@ urlpatterns = [
 
 	url(r'^nova_subcategoria/(?P<categoria_id>\d+)$', views.nova_subcategoria, name='nova_subcategoria'),
 	url(r'^delete_subcategoria/(?P<subcategoria_id>\d+)$', views.delete_subcategoria, name='delete_subcategoria'),
-
-	url(r'^projetos/$', views.projetos, name='projetos'),
-	url(r'^novo_projeto/$', views.novo_projeto, name='novo_projeto'),
-	url(r'^editar_projeto/(?P<projeto_id>\d+)/$', views.editar_projeto, name='editar_projeto'),
 
 	url(r'^notasfiscais/$', views.notasfiscais, name='notasfiscais'),
 	url(r'^nova_notafiscal/$', views.nova_notafiscal, name='nova_notafiscal'),

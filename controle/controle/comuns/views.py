@@ -9,6 +9,9 @@ from django.http import HttpResponseRedirect
 #Importação de Models
 from .models import Departamento, Projeto
 
+#importação de Forms
+from .forms import ProjetoForm, DepartamentoForm
+
 def index(request):
 	return render(request,'comuns/index.html')
 
@@ -68,7 +71,7 @@ def projetos(request):
 	""" Mostra todos os projetos """
 	projetos = Projeto.objects.all()
 	context = {'projetos': projetos}
-	return render(request, 'controles/projetos.html', context)
+	return render(request, 'comuns/projetos.html', context)
 
 
 
@@ -84,11 +87,11 @@ def novo_projeto(request):
 		form = ProjetoForm(request.POST)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect(reverse('controles:projetos'))
+			return HttpResponseRedirect(reverse('comuns:projetos'))
 
 	context = {'form':form}
 
-	return render(request, 'controles/novo_projeto.html', context)
+	return render(request, 'comuns/novo_projeto.html', context)
 
 
 @login_required
@@ -104,6 +107,6 @@ def editar_projeto(request, projeto_id):
 		form = ProjetoForm(instance=projeto, data=request.POST)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect(reverse('controles:projetos'))
+			return HttpResponseRedirect(reverse('comuns:projetos'))
 	context = {'projeto': projeto, 'form': form}
-	return render (request, 'controles/editar_projeto.html', context)
+	return render (request, 'comuns/editar_projeto.html', context)
