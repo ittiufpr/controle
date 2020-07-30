@@ -1,0 +1,20 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p>Projetos</p>
+
+<ul>
+	{% for projeto in projetos %}
+	<li>
+		<a href="">{{ projeto }} </a> <a href="{% url 'comuns:editar_projeto' projeto.id %}">editar</a>
+	</li>
+	{% empty %}
+	<li> Não tem nenhum projeto cadastrado ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<a href="{% url 'comuns:novo_projeto' %}">Adicionar novos projetos</a> 
+
+{% endblock content %}

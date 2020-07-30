@@ -20,5 +20,7 @@ from django.conf.urls import include, url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include(('users.urls','controles'),namespace='users')),
-    path('', include(('controles.urls','controles'),namespace='controles')),
+    path('controle/', include(('controles.urls','controles'),namespace='controles')),
+    path('', include(('comuns.urls','comuns'),namespace='comuns')),
+    
 ]

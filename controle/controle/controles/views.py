@@ -3,7 +3,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import Departamento, Categoria, Subcategoria, Projeto, NotaFiscal, Manual, Item, Equipamento
+#import Models
+from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento
+
+#import Model Comuns
+from comuns.models import Projeto, Departamento
+
 from .forms import DepartamentoForm, CategoriaForm, SubcategoriaForm, ProjetoForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm
 
 #pdf imports

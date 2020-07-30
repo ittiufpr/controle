@@ -1,0 +1,16 @@
+{% extends "controles/base.html" %}
+
+{% block content %}
+
+<p> Editar departamento :</p>
+
+<form action="{% url 'comuns:editar_departamento' departamento.id %}" method='post'>
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Salvar Mudanças</button>
+
+</form>
+
+
+{% endblock content %}

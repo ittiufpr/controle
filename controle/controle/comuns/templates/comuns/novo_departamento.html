@@ -1,0 +1,7 @@
+<form action="{% url 'comuns:novo_departamento' %}" method='post'>
+
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button name="submit">Adicionar Departamento</button>
+
+</form>
