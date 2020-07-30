@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'controles',
     'users',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,7 @@ LOGIN_URL = '/users/login/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
+
+BOOTSTRAP4 = {
+	'include_jquery':True,
+}

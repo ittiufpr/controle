@@ -1,33 +1,93 @@
-<!DOCTYPE html>
-<html>
-
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
-
+{% load bootstrap4 %}
 {% load static %}
 
-<script src="/media/js/jdos-js.js"></script>
-<body>
 
-<p>
-	<a href = "{% url 'controles:departamentos' %}"> Departamentos </a>
-	<a href = "{% url 'controles:categorias' %}"> Categorias </a>
-	<a href = "{% url 'controles:projetos' %}"> Projetos </a>
-	<a href = "{% url 'controles:notasfiscais' %}"> Notas Fiscais </a>
-	<a href = "{% url 'controles:manuais' %}"> Manuais </a>
-	<a href = "{% url 'controles:itens' %}"> Itens </a>
-	<a href = "{% url 'controles:equipamentos' %}"> Equipamentos </a>
-{% if user.is_authenticated %}
-	Olá, {{ user.username }}
-	<a href="{% url 'users:logout' %}">Log Out</a>
-{% else %}
-	<a href="{% url 'users:login' %}">Log In</a>
-{% endif %}
-<p>
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		
+		<meta charset="utf-8">
 
-{% block content %}
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-{% endblock content %}
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-</body>
+		<title>CONTROLE</title>
+
+		<script src="/media/js/jdos-js.js"></script>
+		<link rel="stylesheet" type="text/css" href="/media/css/style.css">
+
+		{# Load CSS and JavaScript #}
+		{% bootstrap_css %}
+		{% bootstrap_javascript jquery='full' %}
+
+		{# Display django.contrib.messages as Bootstrap alerts #}
+		{% bootstrap_messages %}
+
+	</head>
+
+	<body>
+
+
+
+	<!-- Static navbar -->
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Navbar</a>
+
+  		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+   			<span class="navbar-toggler-icon"></span>
+ 		</button>
+
+ 		
+ 			<ul class="nav">
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:departamentos' %}"> Departamentos </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:categorias' %}"> Categorias </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:projetos' %}"> Projetos </ao>
+				</a>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:notasfiscais' %}"> Notas Fiscais </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:manuais' %}"> Manuais </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:itens' %}"> Itens </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href = "{% url 'controles:equipamentos' %}"> Equipamentos </a>
+				</li>
+			</ul>
+			<ul class="nav justify-content-end">
+				<li class="nav-item">
+				{% if user.is_authenticated %}
+				    <span class="navbar-text">
+     				 Olá, {{ user.username }}
+    				</span>
+					
+					<a class="nav-link" href="{% url 'users:logout' %}">Log Out</a>
+				{% else %}
+					<a class="nav-link" href="{% url 'users:login' %}">Log In</a>
+				
+				{% endif %}
+				</li>
+			</ul>
+	</nav>
+<!-- End navbar -->
+		<div class="container">
+
+			<div class="page-header">
+				{% block header %}{% endblock header %}
+			</div>
+			<div>
+				{% block content %}{% endblock content %}
+			</div>
+
+		</div>
+
+	</body>
 </html>

@@ -5,95 +5,93 @@
 {% block content %}
 
 
-
-{% block javascript %}
-  <script>
-
-
-  </script>
-{% endblock %} 
-
-
 <input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Search rows.." title="Type in a name">
 
 <button class="export" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
 
-<table id ="example"  class="display" style="width:100%;text-align:center">
+<table id ="example"  class="table" >
   <thead>
-
-   <th>
-      STATUS
-  </th>
+    <th>
+    </th>
+    
     <th onclick="sortTable(1)">
-    	ID
-	</th>
+      #
+    </th>
 
-	<th>		
-    	PROJETO		
-	</th> 
+    <th>		
+      Projeto
+    </th> 
     
     <th>		
-    	NOME		
-	</th> 
+      Nome
+    </th> 
+    
     <th>
-    	MARCA
-	</th>
+    	Marca
+    </th>
 
-	<th>
-    	MODELO
-	</th>
+    <th>
+      Modelo
+    </th>
 
-  <th>
-      CATEGORIA
-  </th>
+    <th>
+      Categoria
+    </th>
 
-  <th>
-      SUBCATEGORIA
-  </th>
+    <th>
+      Subcategoria
+    </th>
 
-	<th>
-    	CARACTERISTICA
-	</th>
+    <th>
+      Característica
+    </th>
 
-	<th>
-    	QUANTIDADE
-	</th>
-	<th>
-    	CONSUMIVEL
-	</th>
-	<th>
-    	EQUIPAMENTO
-	</th>
-  <th>
-    EDICAO
-  </th>
+    <th>
+      Quantidade
+    </th>
+
+    <th>
+    	Consumível
+    </th>
+	
+    <th>
+    	Equipamento
+    </th>
   
-        </thead>
-        <tbody>
+    <th>
+      Ação
+    </th>
+  
+  </thead>
+  
+  <tbody>
 
   {% for item in itens %}
-  <tr>
-    <td><p hidden>{{ item.status_disponivel | status }}</p> <img  src="{{ item.status_disponivel | status }}" style="width: 16px;" alt="foo"></td>
-    <td>{{ item.id_item }}</td>
-    <td>{{ item.projeto.nome | title }}</td> 
-    <td>{{item.nome | title}}</td>
-    <td>{{item.marca | title}}</td>
-    <td>{{item.modelo | title}}</td>
-    <td>{{item.categoria | title}}</td>
-    <td>{{item.subcategoria | title}}</td>
-    <td>{{item.caracteristica}}</td>
-    <td>{{item.quantidade}}</td>
-    <td>{{item.consumivel}}</td>
-    <td>{{item.id_equipamento_pertencente.nome | title}}</td>
-    <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
-  </tr>
-  {% empty %}
-  	<p>Não tem nenhum item cadastrado ainda.</p>
-  {% endfor %}
+
+    <tr scope="row">
+      <td><img  src="{{ item.status_disponivel | status }}" class="img_status" alt="status"></td>
+      <td>{{ item.id_item }}</td>
+      <td>{{ item.projeto.nome | title }}</td> 
+      <td>{{item.nome | title}}</td>
+      <td>{{item.marca | title}}</td>
+      <td>{{item.modelo | title}}</td>
+      <td>{{item.categoria | title}}</td>
+      <td>{{item.subcategoria | title}}</td>
+      <td>{{item.caracteristica}}</td>
+      <td>{{item.quantidade}}</td>
+      <td>{{item.consumivel}}</td>
+      <td>{{item.id_equipamento_pertencente.nome | title}}</td>
+      <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
+    </tr>
+
+    {% empty %}
+    	<p>Não tem nenhum item cadastrado ainda.</p>
+    {% endfor %}
+
 </tbody>
 </table>
 
-<a href="{% url 'controles:novo_item' %}">Adicionar novos itens</a> 
+<a href="{% url 'controles:novo_item' %}">Adicionar</a> 
 
 
 

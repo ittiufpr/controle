@@ -17,3 +17,11 @@ def status(value): # Only one argument.
     	path = os.path.join(settings.MEDIA_URL,"img/preto.png" )
     	return path
 
+@register.filter(name = 'statusText')
+def status(value): # Only one argument.
+    """Converts a string into all lowercase"""
+    if value:
+    	return 'Disponível'
+    else:
+    	return 'Indisponível'
+

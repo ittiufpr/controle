@@ -1,8 +1,13 @@
 {% extends "controles/base.html" %}
 
-{% block content %}
+{% block header %}
 
-<p>Departamentos</p>
+<div class='jumbotron'>
+	<h1>Departamentos</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
 
 <ul>
 	{% for departamento in departamentos %}
