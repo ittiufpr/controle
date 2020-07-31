@@ -1,10 +1,13 @@
 
 from django.conf.urls import url
+from django.urls import path 
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 from .import views
+
+from .views import NotaFiscalDelete
 
 app_name = "controles"
 
@@ -20,6 +23,8 @@ urlpatterns = [
 	url(r'^notasfiscais/$', views.notasfiscais, name='notasfiscais'),
 	url(r'^nova_notafiscal/$', views.nova_notafiscal, name='nova_notafiscal'),
 	url(r'^delete_notafiscal/(?P<notafiscal_id>\d+)$', views.delete_notafiscal, name='delete_notafiscal'),
+	path('<pk>/delete/', views.NotaFiscalDelete.as_view(), name='NotaFiscalDelete'),
+	
 
 	url(r'^manuais/$', views.manuais, name='manuais'),
 	url(r'^novo_manual/$', views.novo_manual, name='novo_manual'),

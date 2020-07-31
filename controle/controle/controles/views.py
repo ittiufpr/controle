@@ -29,6 +29,9 @@ from django.db.models.signals import post_save
 
 from django.http import JsonResponse
 
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
+
 data = {
 	"patrimonio":'123456',
 	"quantidade":1,
@@ -178,12 +181,22 @@ def nova_notafiscal(request):
 	return render(request, 'controles/nova_notafiscal.html', context)
 
 
+class NotaFiscalDelete(DeleteView):
+	model = NotaFiscal
+	success_url = reverse_lazy('controles:notasfiscais')
+
 
 @login_required
 def delete_notafiscal(request, notafiscal_id):
 	notafiscal = NotaFiscal.objects.get(id=notafiscal_id)
-	notafiscal.delete()
+	try:
+		notafiscal.delete()
+		
+	except ProtectedError :
+		print("erro")
+
 	return HttpResponseRedirect(reverse('controles:notasfiscais'))
+
 
 
 

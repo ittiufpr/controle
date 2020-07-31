@@ -78,7 +78,7 @@ class Equipamento(models.Model):
     id_item = models.OneToOneField(Item, primary_key = True, on_delete=models.PROTECT)
     patrimonio_itti = models.CharField(max_length=30, unique=True, blank=True, null= True, default='')
     patrimonio_ufpr = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(999999)] ,unique=True, null= True, blank=True)
-    id_manual = models.ForeignKey(Manual, on_delete=models.PROTECT, blank=True, null = True)
+    id_manual = models.ForeignKey(Manual, on_delete=models.SET_NULL, blank=True, null = True)
 
 
     def __str__(self):

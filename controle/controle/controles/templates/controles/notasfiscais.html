@@ -1,13 +1,23 @@
 {% extends "controles/base.html" %}
 
+
+
 {% block content %}
 
-<p>Notas Fiscais</p>
 
+<p>Notas Fiscais</p>
+<p id="resposta"></p>
 <ul>
 	{% for notafiscal in notasfiscais %}
 	<li>
-		<a href="">{{ notafiscal }} </a><a href="{{ notafiscal.documento.url}} ">Ver</a><a href="{% url 'controles:delete_notafiscal' notafiscal.id %}">delete</a> 
+		{% if notafiscal.documento %}
+			<a href="{{ notafiscal.documento.url}}">{{ notafiscal }} </a> 
+		 {% else %}
+			<a href="">{{ notafiscal }} </a> 
+		{% endif %}
+
+		<a  href="{% url 'controles:delete_notafiscal' notafiscal.id %}">delete</a> 
+		<a class="delete" href="{% url 'controles:NotaFiscalDelete' notafiscal.id %}">delete view</a> 
 	</li>
 	{% empty %}
 	<li> Não tem nenhuma nota fiscal cadastrado ainda. </li>
@@ -18,3 +28,4 @@
 <a href="{% url 'controles:nova_notafiscal' %}">Adicionar nova Nota Fiscal</a> 
 
 {% endblock content %}
+
