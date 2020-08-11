@@ -1,18 +1,26 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from comuns.models import Departamento, Projeto
+import datetime
 
+
+def current_year():
+    return datetime.date.today().year
+
+
+def max_value_current_year(value):
+    return MaxValueValidator(current_year())(value)
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=40)
-    #abreviacao = models.CharField(max_length=3)
+    abreviacao = models.CharField(max_length=4)
     #subcategoria = models.ForeignKey('self', null=True, blank=True ,related_name='categoria', on_delete=models.PROTECT)
     def __str__(self):
         return self.nome
 
 class Subcategoria(models.Model):
     nome = models.CharField(max_length=40)
-    categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.PROTECT)
+    categoria = models.ForeignKey(Categoria, null=True, blank=True, on_delete=models.CASCADE)
     def __str__(self):
         return self.categoria.nome + " " + self.nome
 
@@ -63,6 +71,8 @@ class Item(models.Model):
     quantidade = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(999999)], default = 1)
     validade = models.DateField(null= True, blank=True)
     id_equipamento_pertencente = models.ForeignKey('self', null=True, blank=True ,related_name='item', on_delete=models.CASCADE)
+    ano = models.PositiveIntegerField(
+        default=current_year(), validators=[MinValueValidator(2009), max_value_current_year])
 
     def __str__(self):
         if(self.tipo_consumivel):
@@ -82,4 +92,4 @@ class Equipamento(models.Model):
 
 
     def __str__(self):
-        return str(self.id_item) + ' ' + str(self.patrimonio_ufpr) + ' ' + str(self.patrimonio_itti)
+        return str(self.patrimonio_ufpr) + ' ' + str(self.patrimonio_itti)

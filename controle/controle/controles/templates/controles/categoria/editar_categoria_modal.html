@@ -1,0 +1,43 @@
+
+{% load widget_tweaks %}
+
+
+{% block content %}
+     <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar categoria</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+     </div>
+
+<form action="{% url 'controles:editar_categoria' categoria.id %}" method='post'>
+       
+    <div class="modal-body">
+
+			{% csrf_token %}
+			{% for hidden in form.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+{{form.field.id_notafiscal}}
+		
+ 
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button name="submit" class="btn btn-success">Atualizar</button>
+        
+      </div>
+</form>
+ 
+
+{% endblock content %}

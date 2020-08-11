@@ -1,4 +1,11 @@
 <form method="post">{% csrf_token %}
     <p>Você irá deletar "{{ object }}"?</p>
     <input type="submit" value="Confirm">
+   
 </form>
+
+{% if itens %}
+{% for item in itens %}
+<p>{{item}}<a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></p>
+{% endfor%}
+{% endif %}

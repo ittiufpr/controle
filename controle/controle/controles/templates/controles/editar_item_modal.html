@@ -1,0 +1,42 @@
+{% load widget_tweaks %}
+
+<!-- adiciona/modifica alguns atributos -->
+{{ form.text|attr:"rows:1"|attr:"cols:20"|attr:"title:Hello, world!" }}
+
+{% block content %}
+
+
+
+
+<form action="{% url 'controles:editar_item' item.id_item %}" method='post'  data-subcategorias-url="{% url 'controles:load_subcategorias' %}">
+       
+    <div class="modal-body">
+
+			{% csrf_token %}
+			{% for hidden in form.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+{{form.field.id_notafiscal}}
+		
+ 
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button name="submit" class="btn btn-success">Save changes</button>
+        
+      </div>
+</form>
+
+ 
+
+{% endblock content %}

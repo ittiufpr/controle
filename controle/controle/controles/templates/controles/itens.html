@@ -2,7 +2,39 @@
 {% load custom_filter %}
 {% load static %}
 
+
+<script src="{% static 'exportCSV.js' %}"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
 {% block content %}
+
+  <script>
+
+console.log("TESTE FUNCIONOU!")
+
+$(document).on("click", "#id_categoria", function() {
+
+$("#id_categoria").change(function () {
+      var url = "{% url 'controles:load_subcategorias' %}";  // get the url of the load_subcategorias view
+  
+      var id_categoria = $(this).val();  // get the selected categoria ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url:url ,                    // set the url of the request (= localhost:8000/ajax/load_subcategorias/)
+        data: {
+          'id_categoria': id_categoria       // add the categoria id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_subcategorias` view function
+          $("#id_subcategoria").html(data);  // replace the contents of the subcategoria input with the data that came from the server
+        }
+      });
+
+    });
+});
+    
+  </script>
 
 
 <input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Search rows.." title="Type in a name">
@@ -81,19 +113,37 @@
       <td>{{item.quantidade}}</td>
       <td>{{item.consumivel}}</td>
       <td>{{item.id_equipamento_pertencente.nome | title}}</td>
-      <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
+      <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a>
+        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button></td>
     </tr>
 
     {% empty %}
     	<p>Não tem nenhum item cadastrado ainda.</p>
-    {% endfor %}
+  {% endfor %}
 
 </tbody>
 </table>
-
 <a href="{% url 'controles:novo_item' %}">Adicionar</a> 
 
 
+<!-- Modal -->
 
+
+<div class="modal fade" id="ModalItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+     <div id="demo">
+     	</div>
+	</div>
+    </div>
+</div>
+</div>
 
 {% endblock content %}

@@ -1,6 +1,11 @@
 {% load pdf_filters %}
 
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,200;0,300;0,500;1,700&display=swap" rel="stylesheet">
+
+</!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,200;0,300;0,500;1,700&display=swap" rel="stylesheet">
 
 <style>
   .sansserif {
@@ -8,23 +13,35 @@
   font-size: 15px;
 }
 </style>
+</head>
+<body>
 
-<table >
-  <tr style="width:250px;">
-    <td>
-    	<img  src="img/ufpr.jpg" style="width: 60px;" alt="foo">
-	</td>
-  <td class = "sansserif" style="width:100px; text-align: center"><b>000000</b></td>
-</tr>
+
+<table  >
+
   <tr>  
-    <td  style="width:50px" >
-    	<img  src="img/itti.png" style="width: 50px; " alt="foo">
-	</td>
-    <td class = "sansserif" style="width:80px; height:50px ; padding: 2px;text-align: center"><b>
-      ACR000
-      000000
+    <td  style="width:75px" >
+      <img  src="img/itti-2.png" style="width: 75px; " alt="foo">
+  </td>
+    <td class = "sansserif" style="width:80px; height:50px ; padding: 2px; text-align: center"><b>
+     {{projeto}}
+     {{itti}}
     </b>
   </td>
   </tr>
   
 </table>
+
+<canvas id="meuCanvas"></canvas>
+
+<script>
+   var canvas = document.getElementById('meuCanvas');
+   var pincel = canvas.getContext('2d');
+       pincel.moveTo(0, 0);
+    pincel.lineTo(200, 200);
+    pincel.stroke();
+</script>
+
+
+</body>
+</html>

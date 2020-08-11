@@ -20,6 +20,7 @@ from django.views import View
 
 #Erro to delete protected
 from django.db.models import ProtectedError
+from django.db import IntegrityError
 
 from django.conf import settings
 import datetime
@@ -31,6 +32,9 @@ from django.http import JsonResponse
 
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
+
+
+from django.forms.models import inlineformset_factory
 
 data = {
 	"patrimonio":'123456',
@@ -60,9 +64,26 @@ def render_to_pdf(template_src, context_dict={}):
 	return None
 
 
+def data_to_pdf(request):
+	data1 ={
+		"ano":'2000',
+		"projeto": 'BR135',
+		"itti":'WKST001/20'
+	}
+
+	pdf_view(request)
+
+
 
 def pdf_view(request, *args, **kwargs):
-		pdf = render_to_pdf('controles/pdf_template_plaqueta.html', data)
+		equipamentos = Equipamento.objects.all()
+		data1 ={
+		"ano":'2020',
+		"projeto": 'BR135',
+		"itti":'WKST001/20'
+		}
+		equipamento_dict = {entry for entry in equipamentos}
+		pdf = render_to_pdf('controles/pdf_template_plaqueta.html', data1)
 		return HttpResponse(pdf, content_type = 'application/pdf')
 
 
@@ -75,6 +96,14 @@ def DownloadPDF(request, *args, **kwargs):
 	response['Content-Disposition'] = content
 	return response
 
+def DownloadPDF2(request, *args, **kwargs):
+	pdf = render_to_pdf('controles/pdf_template.html', data)
+	response = HttpResponse(pdf, content_type='application/pdf')
+	extension = '.pdf'
+	filename = "Invoice_%s" %("12341231")+extension
+	content = "attachment; filename = %s"%(filename)
+	response['Content-Disposition'] = content
+	return response
 
 # Create your views here.
 def categorias(request):
@@ -86,6 +115,48 @@ def categorias(request):
 	return render(request, 'controles/categorias.html', context)
 
 
+def deleteexemplo(request, notafiscal_id):
+	notafiscal = NotaFiscal.objects.get(id=notafiscal_id)
+	context={'object':notafiscal,'error':'','itens':''}
+	try:
+		if request.method =="POST":
+			notafiscal.delete()
+			return HttpResponseRedirect(reverse("controles:notasfiscais"))
+		
+	except IntegrityError as e:
+		print("erro",e)
+		itens = Item.objects.all().filter(id_notafiscal=notafiscal.id)
+		context['itens'] = itens
+		print(itens)
+		#messages.warning(request, "You can't delete this because it's being used by grupos")
+		#return JsonResponse(erros)
+	
+	return render(request,'controles/notafiscal_confirm_delete.html',context)
+
+@login_required
+def delete_categoria(request, categoria_id):
+	categoria = Categoria.objects.get(id=categoria_id)
+	context={'object':'','error':'','itens':''}
+	context['object'] = categoria
+	try:
+		if request.method =="POST":
+			categoria.delete()
+			return render(request,'controles/categoria/categoria_success.html',context)
+		
+	except IntegrityError as e:
+		print("erro",e)
+		itens = Item.objects.all().filter(categoria=categoria_id)
+		context['itens'] = itens
+		context['error'] = 'Essa categoria está referenciada a algum item. Por favor edite os itens com essa categoria!'
+		print(itens)
+		print(render_to_string('controles/categoria_confirm_delete.html',context))
+		response = JsonResponse({"error": render_to_string('controles/categoria_confirm_delete.html',context)})
+		response.status_code = 404
+		return response
+		#return HttpResponseRedirect(reverse('controles:categorias'))
+
+	return render(request,'controles/categoria_confirm_delete.html',context)
+	
 
 @login_required
 def nova_categoria(request):
@@ -101,7 +172,7 @@ def nova_categoria(request):
 			return HttpResponseRedirect(reverse('controles:categorias'))
 
 	context = {'form':form}
-	return render(request, 'controles/nova_categoria.html', context)
+	return render(request, 'controles/categoria/nova_categoria_modal.html', context)
 
 
 
@@ -132,7 +203,15 @@ def nova_subcategoria(request, categoria_id):
 @login_required
 def delete_subcategoria(request, subcategoria_id):
 	subcategoria = Subcategoria.objects.get(id=subcategoria_id)
-	subcategoria.delete()
+	try:
+		subcategoria.delete()
+
+	except IntegrityError as e:
+		print(e)
+		response = JsonResponse({"error":e})
+		response.status_code = 404
+		return response
+
 	return HttpResponseRedirect(reverse('controles:categorias'))
 
 
@@ -152,7 +231,7 @@ def editar_categoria(request, categoria_id):
 			form.save()
 			return HttpResponseRedirect(reverse('controles:categorias'))
 	context = {'categoria': categoria, 'form': form}
-	return render (request, 'controles/editar_categoria.html', context)
+	return render (request, 'controles/categoria/editar_categoria_modal.html', context)
 
 
 
@@ -189,15 +268,21 @@ class NotaFiscalDelete(DeleteView):
 @login_required
 def delete_notafiscal(request, notafiscal_id):
 	notafiscal = NotaFiscal.objects.get(id=notafiscal_id)
+	context={'object':notafiscal,'error':'','itens':''}
 	try:
-		notafiscal.delete()
+		if request.method =="POST":
+			notafiscal.delete()
+			return HttpResponseRedirect(reverse("controles:notasfiscais"))
 		
-	except ProtectedError :
-		print("erro")
-
-	return HttpResponseRedirect(reverse('controles:notasfiscais'))
-
-
+	except IntegrityError as e:
+		print("erro",e)
+		itens = Item.objects.all().filter(id_notafiscal=notafiscal.id)
+		context['itens'] = itens
+		print(itens)
+		#messages.warning(request, "You can't delete this because it's being used by grupos")
+		#return JsonResponse(erros)
+	
+	return render(request,'controles/notafiscal_confirm_delete.html',context)
 
 
 @login_required
@@ -300,6 +385,23 @@ def editar_item(request, item_id):
 	context = {'item': item, 'form': form}
 	return render (request, 'controles/editar_item.html', context)
 
+@login_required
+def editar_item_modal(request, item_id):
+	"""Editar um departamento existente """
+	item = Item.objects.get(id_item=item_id)
+	print(item)
+	if request.method !='POST':
+		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
+		form = ItemForm(instance=item)
+	else:
+		#Dados de POST submetidos; processa os dados
+		form = ItemForm(instance=item, data=request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse('controles:itens'))
+	context = {'item': item, 'form': form}
+	return render (request, 'controles/editar_item_modal.html', context)	
+
 
 @login_required
 def load_itens_equipamento(request):
@@ -349,16 +451,37 @@ def novo_equipamento(request):
 			#salva item
 			item.save()
 			novo_equipamento.id_item = item
+			#num = Item.objects.filter(categoria=item.categoria.pk).filter(ano=item.ano).count()
+			num = Equipamento.objects.filter(id_item__categoria__pk=item.categoria.pk).filter(id_item__ano__contains=item.ano).filter(id_item__projeto__pk=item.projeto.pk).count()
 			n = item.id_item
-			id_itti = "00000" + str(n)
+			id_itti = "000" + str(num+1)
 			print(id_itti)
-			novo_equipamento.patrimonio_itti = item.projeto.acronimo+id_itti[-5:]
+			novo_equipamento.patrimonio_itti = item.categoria.abreviacao+id_itti[-3:]+'/'+str(item.ano)[-2:]
 			novo_equipamento.save()
 			return HttpResponseRedirect(reverse('controles:equipamentos'))
 
 	context = {'form1':equipamento_form,'form2':item_form}
 
 	return render(request, 'controles/novo_equipamento.html', context)
+
+
+@login_required
+def editar_equipamento_modal(request, item_id):
+	"""Editar um departamento existente """
+	item = Item.objects.get(id_item=item_id)
+	print(item)
+	if request.method !='POST':
+		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
+		form = ItemForm(instance=item)
+	else:
+		#Dados de POST submetidos; processa os dados
+		form = ItemForm(instance=item, data=request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse('controles:itens'))
+	context = {'item': item, 'form': form}
+	return render (request, 'controles/editar_item_modal.html', context)	
+
 
 @login_required
 def delete_equipamento(request, equipamento_id):
@@ -370,3 +493,12 @@ def delete_equipamento(request, equipamento_id):
 		print(error_message)
 
 	return HttpResponseRedirect(reverse('controles:equipamentos'))
+
+
+@login_required
+def etiqueta(request, equipamento_id):
+	equipamento = Equipamento.objects.get(id_item=equipamento_id)
+	texto1 = equipamento.id_item.projeto.acronimo +'/'+str(equipamento.id_item.ano)[2:]
+	texto2 = equipamento.patrimonio_itti[:-3]
+	context = {'texto2': texto2, 'texto1':texto1}
+	return render (request, 'controles/etiqueta.html', context)

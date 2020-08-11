@@ -1,0 +1,35 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<form id="form" action="{% url 'controles:delete_categoria' object.id %}" method="post" >
+	 <div class="modal-body">
+       
+
+
+			{% csrf_token %}
+			
+			 <p>Deseja <strong>DELETAR</strong> a categoria  <strong> "{{ object }}" </strong>?</p>
+{% if error%}			 
+<div class="alert alert-danger" role="alert">
+   {{error}}
+</div>
+{% endif%}
+
+
+{% if itens %}
+{% for item in itens %}
+<p>{{item}}<a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></p>
+{% endfor%}
+{% endif %}
+
+
+ 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button  name="submit" class="btn btn-danger">DELETE</button>
+        
+      </div>
+
+</form>
+

@@ -1,20 +1,86 @@
 {% extends "controles/base.html" %}
 
+
+
+
 {% block content %}
+{% block js %}
 
-<p>Categorias</p>
+<script type="text/javascript">
+$(document).on("click", "#form", function() {
 
-<ul>
+	$("#form").on("submit", function(){
+		event.preventDefault();
+    $.ajax({
+    	//headers: { "X-CSRFToken": $("#form").attr('data-token')},
+    	type: "POST",
+        url: $("#form").attr('action'),
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+        //url: "",
+        //data: ("#form").serialize,
+        success: function(data,status){
+            console.log(status);
+            //document.getElementById("aviso").innerHTML = "<h2 style='text-align:center;background-color:green;'>SUCCESS</h2>";
+            document.getElementById("aviso").innerHTML = data;  
+			window.location.reload();
+
+        },
+        error: function(data){
+        	console.log(data);
+        	document.getElementById("aviso").innerHTML = data.responseJSON.error;  
+        }
+    });
+})
+	});
+
+          // CSRF code
+      function getCookie(name) {
+        var cookieValue = null;
+        var i = 0;
+        if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (i; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie('csrftoken');
+
+      function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+  
+</script>
+{% endblock %}
+<h1 class="display-4 text-center" style="padding: 20px;">Categorias</h1>
+
+
+<ul class="list-unstyled">
 	{% for categoria in categorias %}
 	<li>
-			<a href="">{{ categoria }} </a> <a href="{% url 'controles:editar_categoria' categoria.id %}"> editar</a>
+			<span style="font-size:30px; padding-right: 20px;">{{ categoria }} </span>
+			<button type="button" class="btn btn-primary delete btn-sm" style="font-size:10px;" onclick="ajaxreturn('{% url 'controles:editar_categoria' categoria.id %}')" data-toggle="modal" data-target="#exampleModal"> Editar</button>
+			 <button type="button" class="btn btn-primary delete btn-sm btn-danger" style="font-size:10px" onclick="ajaxreturn('{% url 'controles:delete_categoria' categoria.id %}')" data-toggle="modal" data-target="#exampleModal"> Delete</button>
 			
-				
-				<ul>
+				<hr>
+				<ul class="list-unstyled">
 					{% for subcategoria in subcategorias %}
 					{% ifequal  subcategoria.categoria|stringformat:'s'  categoria.nome %}
 					<li>
-						<a href="">{{ subcategoria.nome }}</a><a href="{% url 'controles:delete_subcategoria' subcategoria.id %}">delete</a> 
+						<button type="button" onclick="ajaxreturn('{% url 'controles:delete_subcategoria' subcategoria.id %}')" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">Delete</button>
+						<span style="padding-right: 20px;">{{ subcategoria.nome }}</span><a  href="{% url 'controles:delete_subcategoria' subcategoria.id %}">delete</a> 
 					</li>
 					{% endifequal %}
 					{% endfor %}
@@ -33,5 +99,34 @@
 
 </ul>
 
-<a href="{% url 'controles:nova_categoria' %}">Adicionar novas Categorias</a> 
+<br>
+<button type="button" class="btn btn-outline-success "  onclick="ajaxreturn('{% url 'controles:nova_categoria' %}')" data-toggle="modal" data-target="#exampleModal"> Adicionar </button></td>
+
+<!-- Modal -->
+
+<div id="Success">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog-centered modal-dialog" role="document">
+    <div class="modal-content">
+      
+       <div id="aviso">
+       	<div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">DELETE</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	      	 <div class="modal-body">
+	       	 
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        <button name="submit" class="btn btn-primary">DELETE</button>
+	        
+	      </div>
+	</div>
+    </div>
+</div>
+</div>
+</div>
 {% endblock content %}
