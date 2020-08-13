@@ -9,7 +9,7 @@ from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamen
 #import Model Comuns
 from comuns.models import Projeto, Departamento
 
-from .forms import CategoriaForm, SubcategoriaForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm
+from .forms import CategoriaForm, SubcategoriaForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm, ItemEquipamentoForm
 
 #pdf imports
 from django.template.loader import get_template, render_to_string
@@ -322,7 +322,9 @@ def delete_manual(request, manual_id):
 def itens(request):
 	""" Mostra todos os departamentos """
 	itens = Item.objects.all().order_by('id_item')
-	context = {'itens': itens}
+	equipamentos = {equipamento.id_item.id_item:equipamento for equipamento in Equipamento.objects.all()}
+	context = {'itens': itens,'equipamentos':equipamentos}
+	
 	return render(request, 'controles/itens.html', context)
 
 
@@ -351,11 +353,46 @@ def novo_item(request):
 	context = {'form':form}
 	return render(request, 'controles/novo_item.html', context)
 
+
+@login_required
+def novo_item_modal(request):
+	"""Adiciona um novo departamento"""
+	if request.method != 'POST':
+			#Nenhum dado submetido; cria um formulário em branco
+		form = ItemForm()
+	else:
+		#Dado de POST submetidos; processa os dados
+		form = ItemForm(request.POST, request.FILES)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse('controles:itens'))
+
+	context = {'form':form}
+	return render(request, 'controles/novo_item_modal.html', context)
+
+@login_required
+def duplicar_item_modal(request, item_id):
+	"""Editar um departamento existente """
+	item = Item.objects.get(id_item=item_id)
+	item.id_item = None
+	if request.method !='POST':
+		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
+		form = ItemForm(instance=item)
+	else:
+		#Dados de POST submetidos; processa os dados
+		form = ItemForm(instance=item, data=request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse('controles:itens'))
+	context = {'item': item, 'form': form}
+	return render (request, 'controles/duplicar_item_modal.html', context)
+
+
+
 @login_required
 def load_subcategorias(request):
     id_categoria = request.GET.get('id_categoria')
     subcategorias = Subcategoria.objects.filter(categoria=id_categoria).order_by('nome')
-    print("Chegou aqui!", id_categoria)
     return render(request, 'controles/subcategorias_dropdown_list_options.html', {'subcategorias': subcategorias})	
 
 @login_required
@@ -413,92 +450,153 @@ def load_itens_equipamento(request):
 			itens_equipamento.append(item)
 	return render(request, 'controles/itens_equipamento.html', {'itens_equipamento': itens_equipamento})	
 
+
+##########################  VIEWS EQUIPAMENTO ##########################
+
+#Listar
 @login_required
 def equipamentos(request):
 	""" Mostra todos os equipamentos """
 	equipamentos = Equipamento.objects.all().order_by('id_item')
-	#for equipamento in equipamentos:
-	#	itens_equipamentos = Item.objects.filter(id_equipamento_pertencente=equipamento.id_item).order_by('nome')
-	#	for item in itens_equipamentos:
-	#		if (item.id_item!=equipamento.id_item.id_item):
-	#			print(itens_equipamentos)
 	context = {'equipamentos': equipamentos}
 	return render(request, 'controles/equipamentos.html', context)	
 
-def save_item(sender, instance, **kwargs):
-    print(teste.save())
 
+#Cadastro
 @login_required
 def novo_equipamento(request):
-	"""Cadastra novo equipamento"""
+	"""Cadastra NOVO equipamento"""
+	"""Aqui gera o id do equipamento e cria o item referente ao equipamento"""
 
 	if request.method != 'POST':
 			#Nenhum dado submetido; cria um formulário em branco
 		equipamento_form = EquipamentoForm(prefix='equipamento')
-		item_form = ItemForm(prefix='item')
+		item_form = ItemEquipamentoForm(prefix='item')
 	else:
 		#Dado de POST EquipamentoForm; processa os dados
 		equipamento_form = EquipamentoForm(request.POST, prefix='equipamento')
-		item_form = ItemForm(request.POST, prefix='item')
+		item_form = ItemEquipamentoForm(request.POST, prefix='item')
+
+		#Verifica se foi corretamente cadastrado
 		if all([equipamento_form.is_valid(), item_form.is_valid()]):
-			novo_equipamento=equipamento_form.save(commit=False)
-			#salva instancia do form dos itens no bd
-			novo_item = item_form.save()
-			#pega a instacia do item armazenado
-			item = Item.objects.get(id_item=novo_item.id_item)
-			#atualiza id do equipamento (se é equipamento é ele mesmo)
+
+			novo_equipamento = equipamento_form.save(commit=False)
+			
+			#Cria o item no banco
+			item = item_form.save()
+	
+			#Atualiza equipamento pertencente é ele mesmo
 			item.id_equipamento_pertencente = item
-			#salva item
+
+			#Atualiza no banco
 			item.save()
+
+			#Atualiza id item do equipamento (equipamento é um item)
 			novo_equipamento.id_item = item
-			#num = Item.objects.filter(categoria=item.categoria.pk).filter(ano=item.ano).count()
-			num = Equipamento.objects.filter(id_item__categoria__pk=item.categoria.pk).filter(id_item__ano__contains=item.ano).filter(id_item__projeto__pk=item.projeto.pk).count()
-			n = item.id_item
-			id_itti = "000" + str(num+1)
-			print(id_itti)
-			novo_equipamento.patrimonio_itti = item.categoria.abreviacao+id_itti[-3:]+'/'+str(item.ano)[-2:]
+
+			#Gera patrimonio itti
+			novo_equipamento.patrimonio_itti = gerar_patrimonio_itti(item)
+			
+			#salva no banco
 			novo_equipamento.save()
+			
 			return HttpResponseRedirect(reverse('controles:equipamentos'))
 
 	context = {'form1':equipamento_form,'form2':item_form}
 
-	return render(request, 'controles/novo_equipamento.html', context)
+	return render(request, 'controles/novo_equipamento_modal.html', context)
+
+#Gera ID ITTI
+def gerar_patrimonio_itti(item):
+	'''Gera o Código do Patrimonio do ITTI'''
+	'''O Código é formado Pelo Projeto - Ano - Categoria - NUMERO'''
+	'''Esse NUMERO é o ID de acordo com os equipamentos que se encaixam em PROJETO-ANO-CATEGORIA'''
+
+	#Obtem OS equipamentoS ITTI em ordem descendente de mesmo - PROJETO - ANO - CATEGORIA
+	equipamentos = Equipamento.objects.filter(id_item__categoria__pk=item.categoria.pk).filter(id_item__ano__contains=item.ano).filter(id_item__projeto__pk=item.projeto.pk).order_by('-patrimonio_itti')
+	
+	#Verifica se existem equipamentos 
+	if(equipamentos):
+		# Caso SIM - pega o NUMERO do ultimo equipamento cadastrado do mesmo PROJETO-ANO-CATEGORIA
+		num = int(equipamentos[0].patrimonio_itti[-6:-3])
+	else:
+		# Caso NAO - inicia o número
+		num = 0
+	#FORMATA NUMERO - para 001, 032 
+	num_str = "000" + str(num+1)
+
+	#Cria Código patrimonio itti - ACRONIMOPROJETO-CATEG000/00
+	patrimonio_itti = item.projeto.acronimo + '-' + item.categoria.abreviacao + num_str[-3:] + '/' + str(item.ano)[-2:]
+
+	return patrimonio_itti
 
 
 @login_required
 def editar_equipamento_modal(request, item_id):
 	"""Editar um departamento existente """
 	item = Item.objects.get(id_item=item_id)
-	print(item)
+	equipamento = Equipamento.objects.get(id_item=item_id)
+
 	if request.method !='POST':
 		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
-		form = ItemForm(instance=item)
+		#form = ItemForm(instance=item)
+		equipamento_form = EquipamentoForm(prefix='equipamento', instance=equipamento)
+		item_form = ItemEquipamentoForm(prefix='item', instance=item)
 	else:
-		#Dados de POST submetidos; processa os dados
-		form = ItemForm(instance=item, data=request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:itens'))
-	context = {'item': item, 'form': form}
-	return render (request, 'controles/editar_item_modal.html', context)	
+		#Dado de POST EquipamentoForm; processa os dados
+		equipamento_form = EquipamentoForm(instance=equipamento, data=request.POST, prefix='equipamento')
+		item_form = ItemEquipamentoForm(instance=item, data=request.POST, prefix='item')
+
+		if all([equipamento_form.is_valid(), item_form.is_valid()]):
+			item=item_form.save()
+			equipamento.save()
+
+			return HttpResponseRedirect(reverse('controles:equipamentos'))
+	context = {'item': item, 'form1':equipamento_form,'form2':item_form}
+	return render (request, 'controles/editar_equipamento_modal.html', context)	
 
 
 @login_required
 def delete_equipamento(request, equipamento_id):
 	equipamento = Equipamento.objects.get(id_item=equipamento_id)
+	context={'object':'','error':'','itens':''}
+	context['object'] = equipamento
 	try:
-		equipamento.delete()
+		if request.method =="POST":
+			equipamento.delete()
+			return render(request,'controles/categoria/categoria_success.html',context)		
+		
 	except ProtectedError:
 		error_message = "This object can't be deleted!!"
 		print(error_message)
+		response = JsonResponse({"error": render_to_string('controles/equipamento_confirm_delete.html',context)})
+		response.status_code = 404
+		return response
 
-	return HttpResponseRedirect(reverse('controles:equipamentos'))
+	return render(request,'controles/equipamento_confirm_delete.html',context)
+
 
 
 @login_required
 def etiqueta(request, equipamento_id):
+	'''Gera a Etiqueta do ITTI'''
+
+	#Obtem o equipamento
 	equipamento = Equipamento.objects.get(id_item=equipamento_id)
+	#Gera 'ACRONIMO PROJETO' / 'ANO'
 	texto1 = equipamento.id_item.projeto.acronimo +'/'+str(equipamento.id_item.ano)[2:]
-	texto2 = equipamento.patrimonio_itti[:-3]
-	context = {'texto2': texto2, 'texto1':texto1}
-	return render (request, 'controles/etiqueta.html', context)
+
+	#Pega o tamanho str do acronimo do projeto
+	tam_acron = len(equipamento.id_item.projeto.acronimo)+1
+
+	#Pega apenas 'CATEG000' de ACRONIMO-CATEG000/ANO 
+	texto2 = equipamento.patrimonio_itti[tam_acron:-3]
+
+	#Pega patrimonio UFPR
+	texto3 = equipamento.patrimonio_ufpr
+
+	#Cria dicionario para o template
+	context = {'texto2': texto2, 'texto1':texto1, 'texto3':texto3}
+
+	#Manda renderizar a etiqueta
+	return render (request, 'controles/etiqueta/etiqueta.html', context)

@@ -13,7 +13,7 @@ $(".data").click(function () {
               'id_item': id_item       // add the categoria id to the GET parameters
             },
             success: function (data) {   // `data` is the return
-              console.log(data);
+              //console.log(data);
                 $("<tr><td id=itens_equipamento_"+ id_item + " \" colspan='10'>"+ data+ "</td></tr>").insertAfter(teste);
       
             }

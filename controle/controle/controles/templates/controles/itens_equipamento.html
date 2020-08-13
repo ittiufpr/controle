@@ -1,7 +1,7 @@
 {% load custom_filter %}
 {% load static %}
 
-<table style="text-align: center">
+<table style="text-align: center; border-top: none;">
 
 {% for item in itens_equipamento %}
 
@@ -28,9 +28,10 @@
 
 <td>
 
-<p> {{item.nome}} -  {{item.marca | title}} {{item.modelo | title}} {{item.subcategoria.nome | title}}</p> 
+<p> {{item.nome}} - {{item.subcategoria.nome | title}} {{item.marca | title}} {{item.modelo | title}} </p> 
 </td>
-<td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
+<td><button type="button" class="btn btn-primary btn-sm"  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
+<button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:duplicar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Duplicar</button></td>
 </tr>
 
   {% empty %}

@@ -10,6 +10,7 @@
 
 {% block content %}
 
+<script src="{% static 'exportCSV.js' %}"></script>
   <script>
 
 console.log("TESTE FUNCIONOU!")
@@ -39,7 +40,7 @@ $("#id_categoria").change(function () {
 
 <input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Search rows.." title="Type in a name">
 
-<button class="export" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
+<button class="export btn btn-info" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
 
 <table id ="example"  class="table" >
   <thead>
@@ -112,9 +113,10 @@ $("#id_categoria").change(function () {
       <td>{{item.caracteristica}}</td>
       <td>{{item.quantidade}}</td>
       <td>{{item.consumivel}}</td>
-      <td>{{item.id_equipamento_pertencente.nome | title}}</td>
+      <td>{%if item.id_equipamento_pertencente %} {{equipamentos.62}} {% endif %}</td>
       <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a>
-        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button></td>
+        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
+        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:duplicar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Duplicar</button></td>
     </tr>
 
     {% empty %}
@@ -124,6 +126,7 @@ $("#id_categoria").change(function () {
 </tbody>
 </table>
 <a href="{% url 'controles:novo_item' %}">Adicionar</a> 
+<button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:novo_item_modal' %}')" data-toggle="modal" data-target="#ModalItem"> Novo </button></td>
 
 
 <!-- Modal -->

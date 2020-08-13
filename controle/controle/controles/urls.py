@@ -51,7 +51,9 @@ urlpatterns = [
 	url(r'^novo_item/$', views.novo_item, name='novo_item'),
 	url(r'^editar_item/(?P<item_id>\d+)/$', views.editar_item, name='editar_item'),
 	url(r'^editar_item_modal/(?P<item_id>\d+)/$', views.editar_item_modal, name='editar_item_modal'),
+	url(r'^novo_item_modal/$', views.novo_item_modal, name='novo_item_modal'),
 	url(r'^delete_item/(?P<item_id>\d+)$', views.delete_item, name='delete_item'),
+	url(r'^duplicar_item_modal/(?P<item_id>\d+)/$', views.duplicar_item_modal, name='duplicar_item_modal'),
 
 	url('ajax/load_subcategorias/', views.load_subcategorias, name='load_subcategorias'),
 	url('ajax/load_itens_equipamento/', views.load_itens_equipamento, name='load_itens_equipamento'),
@@ -59,6 +61,8 @@ urlpatterns = [
 	#equipamento
 	url(r'^equipamentos/$', views.equipamentos, name='equipamentos'),
 	url(r'^novo_equipamento/', views.novo_equipamento, name='novo_equipamento'),
+	#url(r'^novo_equipamento_modal/', views.novo_equipamento_modal, name='novo_equipamento_modal'),
+	url(r'^editar_equipamento_modal/(?P<item_id>\d+)/$', views.editar_equipamento_modal, name='editar_equipamento_modal'),
 	url(r'^delete_equipamento/(?P<equipamento_id>\d+)$', views.delete_equipamento, name='delete_equipamento'),
 
 	url(r'^ajax/itensByName/$', views.itensByName, name='itensByName'),

@@ -10,10 +10,15 @@ pincel.font = "15px Arial black";
 pincel.fillStyle = "black";
 
 //Texto 1 - projeto / ano
-pincel.fillText("{{texto1}}",100,30);
+pincel.fillText("{{texto1}}",100,25);
 
 //Texto 2 - codigo itti
-pincel.fillText("{{texto2}}", 100, 60);
+pincel.fillText("{{texto2}}", 100, 45);
+
+pincel.font = "15px monospace bold";
+pincel.fillStyle = "black";
+//Texto 3 - codigo ufpr
+pincel.fillText("{% if texto3 %}{{texto3}}{% else %}{{''}} {%endif%}", 118, 65);
 
 //fundo
 pincel.strokeStyle = "rgb(255,255, 255)";
@@ -26,10 +31,20 @@ roundRect(pincel, 1,1, 200, 80, 40, true);
 var logo = new Image();
 logo.src = "/media/img/itti-tag.png";
 
+//logo ufpr
+var logo2 = new Image();
+logo2.src = "/media/img/ufpr-tag.png";
+
  // renderiza a imagem quando a página terminar de carregar 
 logo.onload = function() {
      pincel.drawImage(logo, 15, 20);
+     //pincel.drawImage(logo2, 90, 52);
     };
+
+logo2.onload = function() {
+     pincel.drawImage(logo2, 90, 52);
+    };
+
 
 //Função para deixar as pontas do retangulo arredondadas
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {

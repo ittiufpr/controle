@@ -1,0 +1,62 @@
+{% load widget_tweaks %}
+
+<!-- adiciona/modifica alguns atributos -->
+{{ form.text|attr:"rows:1"|attr:"cols:20"|attr:"title:Hello, world!" }}
+
+{% block content %}
+
+
+
+
+<form action="{% url 'controles:novo_equipamento' %}" method='post' >
+       
+    <div class="modal-body">
+
+			{% csrf_token %}
+			{% for hidden in form1.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form1.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+
+
+
+      {% for hidden in form2.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form2.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+		
+ 
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button name="submit" class="btn btn-success">Save changes</button>
+        
+      </div>
+</form>
+
+ 
+
+{% endblock content %}
+
+
+
+
+

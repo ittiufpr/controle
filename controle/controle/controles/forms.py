@@ -101,3 +101,22 @@ class EquipamentoForm(forms.ModelForm):
 		model = Equipamento
 		fields = ['patrimonio_itti','patrimonio_ufpr','id_manual']
 
+
+
+class ItemEquipamentoForm(forms.ModelForm):
+	class Meta:
+		model = Item
+		fields = [
+					'nome',
+					'marca','modelo',
+					'categoria',
+					'subcategoria',
+					'caracteristica',
+					'projeto',
+					'ano',
+					'id_departamento', 
+					'local', 
+					'id_notafiscal',
+					'valor'
+					 
+				]
