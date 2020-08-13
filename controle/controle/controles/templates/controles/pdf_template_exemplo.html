@@ -65,7 +65,7 @@ Departamento de Transportes
   <tr>
     <td>{{patrimonio}}</td>
     <td>{{quantidade}}</td>
-    <td>{{descricao}}</td>
+    <td>{{equipamento.categoria}} {{equipamento.marca}} {{equipamento.modelo}}{% if itens %} {% for item in itens %} + {{item}} {% endfor %} {% endif %}</td>
   </tr>
   <tr>
     <td>123456</td>

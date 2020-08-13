@@ -1,0 +1,41 @@
+{% load custom_filter %}
+{% load static %}
+
+<table style="text-align: center; border-top: none;">
+
+{% for item in itens_equipamento %}
+
+<!--
+<table style="width:100%;text-align: center">
+<tbody>
+  <tr>
+    <td><p hidden>{{ item.status_disponivel | status }}</p> <img  src="{{ item.status_disponivel | status }}" style="width: 16px;" alt="foo"></td>
+    <td>{{item.nome | title}}</td>
+    <td>{{item.marca | title}}</td>
+    <td>{{item.modelo | title}}</td>
+    <td>{{item.categoria | title}}</td>
+    <td>{{item.subcategoria.nome | title}}</td>
+    <td>{{item.caracteristica}}</td>
+    <td>{{item.quantidade}}</td>
+    <td>{{item.consumivel}}</td>
+    <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a></td>
+  </tr>
+
+</tbody>
+</table>
+-->
+<tr>
+
+<td>
+
+<p> {{item.nome}} - {{item.subcategoria.nome | title}} {{item.marca | title}} {{item.modelo | title}} </p> 
+</td>
+<td><button type="button" class="btn btn-primary btn-sm"  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
+<button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:duplicar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Duplicar</button></td>
+</tr>
+
+  {% empty %}
+  	<p>Não tem nenhum item cadastrado ainda.</p>
+  {% endfor %}
+
+</table>

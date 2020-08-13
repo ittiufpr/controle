@@ -1,0 +1,58 @@
+
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+
+
+
+<form  action="{% url 'controles:editar_equipamento_modal' item.id_item %}" method='post'  data-subcategorias-url="{% url 'controles:load_subcategorias' %}">
+       
+    <div class="modal-body">
+
+			{% csrf_token %}
+			{% csrf_token %}
+			{% for hidden in form1.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form1.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+
+
+
+      {% for hidden in form2.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% for field in form2.visible_fields %}
+  <div class="form-group">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+     {{ field|add_class:'form-control' }}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  </div>
+{% endfor %}
+		
+		
+ 
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button name="submit" class="btn btn-success">Save changes</button>
+        
+      </div>
+</form>
+
+ 
+
+{% endblock content %}

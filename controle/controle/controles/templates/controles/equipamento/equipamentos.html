@@ -1,0 +1,189 @@
+{% extends "controles/base.html" %}
+{% load custom_filter %}
+{% load static %}
+
+{% block content %}
+
+<script src="{% static 'itens_equipamento.js' %}"></script>
+
+<script src="{% static 'subcategorias.js' %}"></script>
+
+<script src="{% static 'exportCSV.js' %}"></script>
+{% block javascript %}
+
+<script type="text/javascript">
+$(document).on("click", "#form", function() {
+
+  $("#form").on("submit", function(){
+    event.preventDefault();
+    $.ajax({
+      //headers: { "X-CSRFToken": $("#form").attr('data-token')},
+      type: "POST",
+        url: $("#form").attr('action'),
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        },
+        //url: "",
+        //data: ("#form").serialize,
+        success: function(data,status){
+            console.log(status);
+            //document.getElementById("aviso").innerHTML = "<h2 style='text-align:center;background-color:green;'>SUCCESS</h2>";
+            document.getElementById("aviso").innerHTML = data;  
+      window.location.reload();
+
+        },
+        error: function(data){
+          console.log(data);
+          document.getElementById("aviso").innerHTML = data.responseJSON.error;  
+        }
+    });
+})
+  });
+
+          // CSRF code
+      function getCookie(name) {
+        var cookieValue = null;
+        var i = 0;
+        if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (i; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      var csrftoken = getCookie('csrftoken');
+
+      function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+  
+</script>
+
+{% endblock %} 
+
+<style>
+#panel {
+  padding: 50px;
+  display: none;
+}
+</style>
+
+<h1 class="display-4 text-center" style="padding: 20px;">Equipamentos</h1>
+
+<input type="text" id="myInput" onkeyup="searchTable('example','myInput');" placeholder="Procurar..." title="Digite!">
+
+<button type="button" class="btn btn-outline-success"  onclick="ajaxreturn('{% url 'controles:novo_equipamento' %}')" data-toggle="modal" data-target="#ModalItem"> Novo Equipamento </button>
+<button class="export btn btn-info" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
+<br>
+<br>
+
+
+
+<div>
+<table id ="example"  class="table" style="width:100%;text-align:center" data-itens-equipamento-url="{% url 'controles:load_itens_equipamento' %}">
+  <thead>
+    <th onclick="sortTable(0)">
+      #
+    </th>
+    
+    <th onclick="sortTable(1)" >
+      ITTI
+    </th>
+
+    <th>    
+      UFPR   
+    </th> 
+
+    <th>    
+      Projeto   
+    </th>    
+    
+    <th>    
+      Marca  
+    </th>
+    <th>    
+      Modelo   
+    </th> 
+
+    <th>    
+      Categoria   
+    </th> 
+
+    <th>    
+      Manual    
+    </th>
+
+    <th>    
+      Nota Fiscal    
+    </th> 
+
+    <th>    
+      Ações    
+    </th> 
+     
+     
+  </thead>
+
+  <tbody>
+
+    {% for equipamento in equipamentos %}
+    <tr class="data">
+      <td >{{ equipamento.id_item.id_item }}</td>
+      <td ><a href="{% url 'controles:etiqueta' equipamento.id_item.id_item %}" target="_blank">{{ equipamento.patrimonio_itti}}</a></td> 
+      <td>{{equipamento.patrimonio_ufpr}}</td>
+      <td>{{ equipamento.id_item.projeto }}</td>
+      <td>{{ equipamento.id_item.marca }}</td>
+      <td>{{ equipamento.id_item.modelo }}</td>
+      <td>{{ equipamento.id_item.categoria}}</td>
+      <td><a href="{{ equipamento.id_manual.documento.url }} ">{{ equipamento.id_manual.nome}}</a></td>
+      <td><a href="{{ equipamento.id_item.id_notafiscal.documento.url }} ">{{ equipamento.id_item.id_notafiscal.nome}}</a></td>
+      <td>
+      <button type="button" class="btn btn-primary delete btn-sm btn-danger" style="font-size:10px" onclick="ajaxreturn('{% url 'controles:delete_equipamento' equipamento.id_item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Delete</button>
+      <button type="button" class="btn btn-primary delete btn-sm" style="font-size:10px" onclick="ajaxreturn('{% url 'controles:editar_equipamento_modal' equipamento.id_item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
+      </td>
+    </tr>
+
+
+    {% empty %}
+    	<p>Não tem nenhum equipamento cadastrado ainda.</p>
+    {% endfor %}
+
+  </tbody>
+</table>
+</div>
+
+
+
+<!-- Modal -->
+
+
+<div class="modal fade" id="ModalItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-load-categorias-url="{% url 'controles:load_subcategorias' %}">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div id="aviso">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Editar Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+     <div id="demo">
+      </div>
+  </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock content %}

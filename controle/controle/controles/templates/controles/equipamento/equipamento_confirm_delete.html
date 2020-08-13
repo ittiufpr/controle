@@ -8,7 +8,8 @@
 
 			{% csrf_token %}
 			
-			 <p>Deseja <strong>DELETAR</strong> a categoria  <strong> "{{ object }}" </strong>?</p>
+			 <p>Deseja <strong>DELETAR</strong> o equipamento  <strong> "{{ object }}" </strong>?</p>
+       <p><strong> Todos os itens vinculados também serão excluidos!</strong></p>
 {% if error%}			 
 <div class="alert alert-danger" role="alert">
    {{error}}

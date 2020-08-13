@@ -36,15 +36,8 @@ from django.urls import reverse_lazy
 
 from django.forms.models import inlineformset_factory
 
-data = {
-	"patrimonio":'123456',
-	"quantidade":1,
-	"descricao":'descricao do item',
-	"usuario":"NOME DO COLABORADOR",
-	"cpf":"123.123.123-12",
-	"date": datetime.datetime.now(),
-	"tecnico":"NOME DO FUC. RESP"
-}
+
+##################### GERADOR DE PDF ################################
 
 
 
@@ -73,17 +66,48 @@ def data_to_pdf(request):
 
 	pdf_view(request)
 
+#pega todos os itens de um equipamento
+def itens_equipamento(id_item):
+	itens = Item.objects.filter(id_equipamento_pertencente=id_item).order_by('nome')
+	itens_equipamento = []
+	for item in itens:
+		if (int(item.id_item)!=int(id_item)):
+			itens_equipamento.append(item)
+	return itens_equipamento	
 
+#verifica a frequencia de nomes do item e retorna 4xitem1 3xitem2
+def frequenciaItens(itens_equipamento):
+	itens = []
+
+	for item in itens_equipamento:
+		itens.append(item.nome)
+	
+	itens_equipamento = {}
+	itens_equipamento = {item:itens.count(item) for item in itens}
+	print (itens_equipamento)
+
+	itens = []
+	for k,v in itens_equipamento.items():
+		item = str(v) + 'x' + k
+		itens.append(item)
+
+	return itens
 
 def pdf_view(request, *args, **kwargs):
 		equipamentos = Equipamento.objects.all()
-		data1 ={
-		"ano":'2020',
-		"projeto": 'BR135',
-		"itti":'WKST001/20'
+
+		data = {
+			"patrimonio":equipamentos[0].patrimonio_itti,
+			"quantidade":equipamentos[0].id_item.quantidade,
+			"itens":frequenciaItens(itens_equipamento(equipamentos[0].id_item.id_item)),
+			"equipamento":equipamentos[0].id_item,
+			"usuario":"NOME DO COLABORADOR",
+			"cpf":"123.123.123-12",
+			"date": datetime.datetime.now(),
+			"tecnico":"NOME DO FUC. RESP"
 		}
 		equipamento_dict = {entry for entry in equipamentos}
-		pdf = render_to_pdf('controles/pdf_template_plaqueta.html', data1)
+		pdf = render_to_pdf('controles/pdf_template_exemplo.html', data)
 		return HttpResponse(pdf, content_type = 'application/pdf')
 
 
@@ -96,14 +120,10 @@ def DownloadPDF(request, *args, **kwargs):
 	response['Content-Disposition'] = content
 	return response
 
-def DownloadPDF2(request, *args, **kwargs):
-	pdf = render_to_pdf('controles/pdf_template.html', data)
-	response = HttpResponse(pdf, content_type='application/pdf')
-	extension = '.pdf'
-	filename = "Invoice_%s" %("12341231")+extension
-	content = "attachment; filename = %s"%(filename)
-	response['Content-Disposition'] = content
-	return response
+
+
+######################### CATEGORIA ###########################
+
 
 # Create your views here.
 def categorias(request):
@@ -114,24 +134,6 @@ def categorias(request):
 	context = {'categorias': categorias, 'subcategorias': subcategorias}
 	return render(request, 'controles/categorias.html', context)
 
-
-def deleteexemplo(request, notafiscal_id):
-	notafiscal = NotaFiscal.objects.get(id=notafiscal_id)
-	context={'object':notafiscal,'error':'','itens':''}
-	try:
-		if request.method =="POST":
-			notafiscal.delete()
-			return HttpResponseRedirect(reverse("controles:notasfiscais"))
-		
-	except IntegrityError as e:
-		print("erro",e)
-		itens = Item.objects.all().filter(id_notafiscal=notafiscal.id)
-		context['itens'] = itens
-		print(itens)
-		#messages.warning(request, "You can't delete this because it's being used by grupos")
-		#return JsonResponse(erros)
-	
-	return render(request,'controles/notafiscal_confirm_delete.html',context)
 
 @login_required
 def delete_categoria(request, categoria_id):
@@ -174,7 +176,26 @@ def nova_categoria(request):
 	context = {'form':form}
 	return render(request, 'controles/categoria/nova_categoria_modal.html', context)
 
+@login_required
+def editar_categoria(request, categoria_id):
+	"""Editar um departamento existente """
+	categoria = Categoria.objects.get(id=categoria_id)
 
+	if request.method !='POST':
+		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
+		form = CategoriaForm(instance=categoria)
+	else:
+		#Dados de POST submetidos; processa os dados
+		form = CategoriaForm(instance=categoria, data=request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse('controles:categorias'))
+	context = {'categoria': categoria, 'form': form}
+	return render (request, 'controles/categoria/editar_categoria_modal.html', context)
+
+
+
+########################## SUBCATEGORIA ############################
 
 
 @login_required
@@ -216,24 +237,7 @@ def delete_subcategoria(request, subcategoria_id):
 
 
 
-@login_required
-def editar_categoria(request, categoria_id):
-	"""Editar um departamento existente """
-	categoria = Categoria.objects.get(id=categoria_id)
-
-	if request.method !='POST':
-		#Requisisção inicial; preenche preciamento o formulário com a entrada atual
-		form = CategoriaForm(instance=categoria)
-	else:
-		#Dados de POST submetidos; processa os dados
-		form = CategoriaForm(instance=categoria, data=request.POST)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('controles:categorias'))
-	context = {'categoria': categoria, 'form': form}
-	return render (request, 'controles/categoria/editar_categoria_modal.html', context)
-
-
+############################ NOTA FISCAL ######################################
 
 @login_required
 def notasfiscais(request):
@@ -285,6 +289,8 @@ def delete_notafiscal(request, notafiscal_id):
 	return render(request,'controles/notafiscal_confirm_delete.html',context)
 
 
+########################## Manual ##################################
+
 @login_required
 def manuais(request):
 	""" Mostra todos os departamentos """
@@ -318,11 +324,14 @@ def delete_manual(request, manual_id):
 	return HttpResponseRedirect(reverse('controles:manuais'))
 
 
+############################### ITEM #################################
+
 @login_required
 def itens(request):
 	""" Mostra todos os departamentos """
 	itens = Item.objects.all().order_by('id_item')
 	equipamentos = {equipamento.id_item.id_item:equipamento for equipamento in Equipamento.objects.all()}
+	print(equipamentos)
 	context = {'itens': itens,'equipamentos':equipamentos}
 	
 	return render(request, 'controles/itens.html', context)
@@ -459,7 +468,7 @@ def equipamentos(request):
 	""" Mostra todos os equipamentos """
 	equipamentos = Equipamento.objects.all().order_by('id_item')
 	context = {'equipamentos': equipamentos}
-	return render(request, 'controles/equipamentos.html', context)	
+	return render(request, 'controles/equipamento/equipamentos.html', context)	
 
 
 #Cadastro
@@ -504,7 +513,7 @@ def novo_equipamento(request):
 
 	context = {'form1':equipamento_form,'form2':item_form}
 
-	return render(request, 'controles/novo_equipamento_modal.html', context)
+	return render(request, 'controles/equipamento/novo_equipamento_modal.html', context)
 
 #Gera ID ITTI
 def gerar_patrimonio_itti(item):
@@ -553,7 +562,7 @@ def editar_equipamento_modal(request, item_id):
 
 			return HttpResponseRedirect(reverse('controles:equipamentos'))
 	context = {'item': item, 'form1':equipamento_form,'form2':item_form}
-	return render (request, 'controles/editar_equipamento_modal.html', context)	
+	return render (request, 'controles/equipamento/editar_equipamento_modal.html', context)	
 
 
 @login_required
@@ -563,17 +572,20 @@ def delete_equipamento(request, equipamento_id):
 	context['object'] = equipamento
 	try:
 		if request.method =="POST":
+			item = Item.objects.get(id_item=equipamento_id)
+
 			equipamento.delete()
-			return render(request,'controles/categoria/categoria_success.html',context)		
+			item.delete()
+			return render(request,'controles/equipamento/equipamento_success.html',context)		
 		
 	except ProtectedError:
 		error_message = "This object can't be deleted!!"
 		print(error_message)
-		response = JsonResponse({"error": render_to_string('controles/equipamento_confirm_delete.html',context)})
+		response = JsonResponse({"error": render_to_string('controles/equipamento/equipamento_confirm_delete.html',context)})
 		response.status_code = 404
 		return response
 
-	return render(request,'controles/equipamento_confirm_delete.html',context)
+	return render(request,'controles/equipamento/equipamento_confirm_delete.html',context)
 
 
 
