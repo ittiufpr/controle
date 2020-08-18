@@ -404,15 +404,27 @@ def load_subcategorias(request):
     subcategorias = Subcategoria.objects.filter(categoria=id_categoria).order_by('nome')
     return render(request, 'controles/subcategorias_dropdown_list_options.html', {'subcategorias': subcategorias})	
 
+
+
 @login_required
 def delete_item(request, item_id):
 	item = Item.objects.get(id_item=item_id)
+	context={'object':'','error':'','itens':''}
+	context['object'] = item
 	try:
-		item.delete()
-	except ProtectedError:
-		error_message = "This object can't be deleted!!"
+		if request.method =="POST":
+			item.delete()
+			return render(request,'controles/item/item_success.html',context)
+	except IntegrityError as e:
+		print("erro",e)
+		context['error'] = "Esse item está referenciado." + repr(e)
+		response = JsonResponse({"error": render_to_string('controles/item/item_confirm_delete.html',context)})
+		response.status_code = 404
+		return response
 
-	return HttpResponseRedirect(reverse('controles:itens'))
+	return render(request,'controles/item/item_confirm_delete.html',context)
+
+
 
 @login_required
 def editar_item(request, item_id):

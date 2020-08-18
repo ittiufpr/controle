@@ -1,0 +1,84 @@
+{% extends "controles/base.html" %}
+{% load static %}
+{% load custom_filter %}
+
+{% block header %}
+
+<script src="{% static 'ajax_form_2.js' %}"></script>
+
+<h1 class="display-4 text-center" style="padding: 20px;">Pessoas</h1>
+
+{% endblock header %}
+
+{% block content %}
+
+
+<table id ="example"  class="table" style="width:100%;text-align:center" data-itens-equipamento-url="">
+  <thead>
+    <th onclick="sortTable(0)">
+      Nome
+    </th>
+    
+    <th onclick="sortTable(1)" >
+      CPF
+    </th>
+
+    <th>    
+      E-mail   
+    </th> 
+        <th>    
+      Ações  
+    </th> 
+     
+     
+  </thead>
+
+  <tbody>
+
+    {% for pessoa in pessoas %}
+    <tr class="data">
+      <td >{{ pessoa.nome | title}}</td>
+      <td ><a href="{% url 'comuns:editar_pessoa' pessoa.cpf %}">{{ pessoa.cpf | cpf_format}}</a></td> 
+      <td>{{pessoa.email}}</td>
+      <td><button type="button" class="btn btn-primary delete btn-sm btn-danger" style="font-size:10px" onclick="ajaxreturn('{% url 'comuns:delete_pessoa' pessoa.cpf %}')" data-toggle="modal" data-target="#ModalPessoa"> Delete</button>
+      <button type="button" class="btn btn-primary btn-sm" style="font-size:10px" onclick="ajaxreturn('{% url 'comuns:editar_pessoa' pessoa.cpf %}')" data-toggle="modal" data-target="#ModalPessoa"> Editar</button></td>
+      
+      </td>
+    </tr>
+
+
+    {% empty %}
+    	<p>Não tem nenhum equipamento cadastrado ainda.</p>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+<button type="button" class="btn btn-outline-success"  onclick="ajaxreturn('{% url 'comuns:nova_pessoa' %}')" data-toggle="modal" data-target="#ModalPessoa"> Nova Pessoa </button>
+
+
+
+<!-- Modal -->
+
+<div id="Success">
+<div class="modal fade" id="ModalPessoa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog-centered modal-dialog" role="document">
+    <div class="modal-content">
+      
+    <div id="aviso">
+
+	</div>
+    </div>
+</div>
+</div>
+</div>
+
+{% endblock content %}
+
+
+
+
+
+
+
+

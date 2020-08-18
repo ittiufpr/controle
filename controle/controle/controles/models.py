@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from comuns.models import Departamento, Projeto
+from comuns.models import Departamento, Projeto, Pessoa,Funcionario
 import datetime
-
+from django.utils import timezone
 
 def current_year():
     return datetime.date.today().year
@@ -93,3 +93,22 @@ class Equipamento(models.Model):
 
     def __str__(self):
         return str(self.patrimonio_ufpr) + ' ' + str(self.patrimonio_itti)
+
+class Laudo(models.Model):
+    id_item   = models.ForeignKey(Item, on_delete=models.PROTECT)
+    descricao = models.TextField(max_length=200)
+    documento = models.FileField(upload_to='uploads/laudo/')
+    cpf_func  = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT)
+
+class Emprestimo(models.Model):
+    cpf             = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT)
+    id_item         = models.ForeignKey(Item, on_delete=models.PROTECT)
+    data_emprestimo = models.DateField(default=timezone.now)
+    cpf_func        = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT, related_name='%(class)s_cpf_funcionario')
+
+
+class Devolucao(models.Model):
+    emprestimo     = models.OneToOneField(Emprestimo, primary_key = True, on_delete=models.CASCADE)
+    cpf_func       = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT)
+    data_devolucao = models.DateField(default=timezone.now)
+    laudo          = models.ForeignKey(Laudo, on_delete=models.PROTECT, blank=True, null=True)

@@ -1,0 +1,29 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+<form id="form" action="{% url 'comuns:delete_pessoa' object.cpf %}" method="post" >
+	 <div class="modal-body">
+       
+
+
+			{% csrf_token %}
+			
+			 <p>Deseja <strong>DELETAR</strong> a pessoa <strong> "{{ object }}" </strong>?</p>
+{% if error%}			 
+<div class="alert alert-danger" role="alert">
+   {{error}}
+</div>
+{% endif%}
+
+
+
+ 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button  name="submit" class="btn btn-danger">DELETE</button>
+        
+      </div>
+
+</form>
+

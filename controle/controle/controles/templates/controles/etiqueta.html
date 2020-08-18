@@ -1,0 +1,84 @@
+
+<canvas id="etiqueta" width="202" height="82"></canvas>
+
+{{equipamento.projeto.acronimo}}
+<script>
+var canvas = document.getElementById('etiqueta');
+var pincel = canvas.getContext('2d');
+
+pincel.font = "15px Arial black";
+pincel.fillStyle = "black";
+
+//Texto 1 - projeto / ano
+pincel.fillText("{{texto1}}",100,25);
+
+//Texto 2 - codigo itti
+pincel.fillText("{{texto2}}", 100, 45);
+
+pincel.font = "15px monospace bold";
+pincel.fillStyle = "black";
+//Texto 3 - codigo ufpr
+pincel.fillText("{% if texto3 %}{{texto3}}{% else %}{{''}} {%endif%}", 118, 65);
+
+//fundo
+pincel.strokeStyle = "rgb(255,255, 255)";
+pincel.fillStyle = "rgba(211,211, 211, 0.2)";
+
+//Desenho TAG
+roundRect(pincel, 1,1, 200, 80, 40, true);
+
+//Logo itti
+var logo = new Image();
+logo.src = "/media/img/itti-tag.png";
+
+//logo ufpr
+var logo2 = new Image();
+logo2.src = "/media/img/ufpr-tag.png";
+
+ // renderiza a imagem quando a página terminar de carregar 
+logo.onload = function() {
+     pincel.drawImage(logo, 15, 20);
+     //pincel.drawImage(logo2, 90, 52);
+    };
+
+logo2.onload = function() {
+     pincel.drawImage(logo2, 90, 52);
+    };
+
+
+//Função para deixar as pontas do retangulo arredondadas
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke === 'undefined') {
+    stroke = true;
+  }
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  } else {
+    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
+
+}
+</script>

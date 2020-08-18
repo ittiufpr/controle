@@ -1,0 +1,26 @@
+<form id="form" action="{% url 'controles:delete_item' object.id_item %}" method="post" >
+	 <div class="modal-body">
+       
+
+
+			{% csrf_token %}
+			
+			 <p>Deseja <strong>DELETAR</strong> o item  <strong> "{{ object }}" </strong>?</p>
+       
+{% if error%}			 
+<div class="alert alert-danger" role="alert">
+   {{error}}
+</div>
+{% endif%}
+
+
+ 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button  name="submit" class="btn btn-danger">DELETE</button>
+        
+      </div>
+
+</form>
+

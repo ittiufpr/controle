@@ -3,13 +3,8 @@
 {% load static %}
 
 
-<script src="{% static 'exportCSV.js' %}"></script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-
 {% block content %}
-
+<script src="{% static 'ajax_form.js' %}"></script>
 <script src="{% static 'exportCSV.js' %}"></script>
   <script>
 
@@ -35,6 +30,7 @@ $("#id_categoria").change(function () {
     });
 });
     
+
   </script>
 
 
@@ -42,11 +38,10 @@ $("#id_categoria").change(function () {
 
 <button class="export btn btn-info" onclick="exportTableToCSV($('#example'),'export.csv');">CSV</button>
 
-<table id ="example"  class="table" >
+<table id ="myTable"  class="table" >
   <thead>
     <th>
     </th>
-    
     <th onclick="sortTable(1)">
       #
     </th>
@@ -63,7 +58,7 @@ $("#id_categoria").change(function () {
     	Marca
     </th>
 
-    <th>
+    <th onclick="sortTable(5)">
       Modelo
     </th>
 
@@ -114,9 +109,11 @@ $("#id_categoria").change(function () {
       <td>{{item.quantidade}}</td>
       <td>{{item.consumivel}}</td>
       <td>{%if item.id_equipamento_pertencente.nome %} {{equipamentos|get_item:item.id_equipamento_pertencente.id_item}} {% else %} Sem Vínculo {% endif %} </td>
-      <td><a href="{% url 'controles:delete_item' item.id_item %}">delete</a><a href="{% url 'controles:editar_item' item.id_item %}">editar</a>
-        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
-        <button type="button" class="btn btn-primary "  onclick="loadDoc('{% url 'controles:duplicar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Duplicar</button></td>
+      <td>
+        <button type="button" class="btn btn-danger btn-sm" onclick="ajaxreturn('{% url 'controles:delete_item' item.id_item %}')" data-toggle="modal" data-target="#ModalItem">Delete</button>
+        <button type="button" class="btn btn-primary btn-sm"  onclick="ajaxreturn('{% url 'controles:editar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Editar</button>
+        <button type="button" class="btn btn-primary btn-sm"  onclick="ajaxreturn('{% url 'controles:duplicar_item_modal' item.id_item %}')" data-toggle="modal" data-target="#ModalItem"> Duplicar</button>
+      </td>
     </tr>
 
     {% empty %}
@@ -134,7 +131,10 @@ $("#id_categoria").change(function () {
 
 <div class="modal fade" id="ModalItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
+
+    
     <div class="modal-content">
+      <div id="aviso">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Editar Item</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -146,6 +146,7 @@ $("#id_categoria").change(function () {
      	</div>
 	</div>
     </div>
+  </div>
 </div>
 </div>
 

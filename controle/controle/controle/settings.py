@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'comuns',
     'bootstrap4',
     'widget_tweaks',
+    'cpf_field',
 ]
 
 MIDDLEWARE = [

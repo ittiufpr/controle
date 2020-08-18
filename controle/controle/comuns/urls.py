@@ -27,6 +27,11 @@ urlpatterns = [
 	#Mostra formulario para editar projetos
 	url(r'^editar_projeto/(?P<projeto_id>\d+)/$', views.editar_projeto, name='editar_projeto'),
 
+	#Mostra Pessoas
+	url(r'^pessoas/$', views.pessoas, name='pessoas'),
+	url(r'^editar_pessoa/(?P<pessoa_cpf>\d+)/$', views.editar_pessoa, name='editar_pessoa'),
+	url(r'^nova_pessoa/$', views.nova_pessoa, name='nova_pessoa'),
+	url(r'^delete_pessoa/(?P<pessoa_cpf>\d+)$', views.delete_pessoa, name='delete_pessoa'),
 ]
 
 if settings.DEBUG:
