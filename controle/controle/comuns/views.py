@@ -49,6 +49,7 @@ def novo_departamento(request):
 		#Dado de POST submetidos; processa os dados
 		form = DepartamentoForm(request.POST)
 		if form.is_valid():
+			print("SALVEI!")
 			form.save()
 			return HttpResponseRedirect(reverse('comuns:departamentos'))
 	context = {'form':form}
@@ -91,7 +92,7 @@ def projetos(request):
 	""" Mostra todos os projetos """
 	projetos = Projeto.objects.all()
 	context = {'projetos': projetos}
-	return render(request, 'comuns/projetos.html', context)
+	return render(request, 'comuns/projeto/projetos.html', context)
 
 
 
@@ -99,6 +100,7 @@ def projetos(request):
 @login_required
 def novo_projeto(request):
 	"""Adiciona um novo projeto"""
+	data = {}
 	if request.method != 'POST':
 			#Nenhum dado submetido; cria um formulário em branco
 		form = ProjetoForm()
@@ -106,12 +108,21 @@ def novo_projeto(request):
 		#Dado de POST submetidos; processa os dados
 		form = ProjetoForm(request.POST)
 		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('comuns:projetos'))
+			try:
+				form.save()
+				data['stat'] = "OK";
+				return HttpResponse(json.dumps(data), content_type='application/json')
+			except IntegrityError as e:
+				print(e)
+		else:
+			context = {'form': form}
+			return render(request, 'comuns/projeto/novo_projeto.html', context)
 
 	context = {'form':form}
 
-	return render(request, 'comuns/novo_projeto.html', context)
+	return render(request, 'comuns/projeto/novo_projeto.html', context)
+
+	
 
 
 @login_required
@@ -129,7 +140,7 @@ def editar_projeto(request, projeto_id):
 			form.save()
 			return HttpResponseRedirect(reverse('comuns:projetos'))
 	context = {'projeto': projeto, 'form': form}
-	return render (request, 'comuns/editar_projeto.html', context)
+	return render (request, 'comuns/projeto/editar_projeto.html', context)
 
 ########## PESSOAS ##########
 

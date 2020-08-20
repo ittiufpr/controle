@@ -1,0 +1,43 @@
+{% extends "controles/base.html" %}
+{% load static %}
+
+{% block header %}
+
+<script src="{% static 'ajax_form_2.js' %}"></script>
+
+<h1 class="display-4 text-center" style="padding: 20px;">Projetos</h1>
+
+{% endblock header %}
+
+{% block content %}
+
+<ul class="list-unstyled">
+	{% for projeto in projetos %}
+	<li>
+		<span style="font-size:30px; padding-right: 20px;"> {{ projeto.nome }} </span> | {{ projeto.acronimo }}
+		<button type="button" class="btn btn-primary btn-sm" style="font-size:10px;" onclick="ajaxreturn('{% url 'comuns:editar_projeto' projeto.id %}')" data-toggle="modal" data-target="#Modal"> Editar</button>
+	</li>
+	<hr>
+	{% empty %}
+	<li> Não tem nenhum projeto cadastrado ainda. </li>
+	{% endfor %}
+
+</ul>
+
+<button type="button" class="btn btn-outline-success"  onclick="ajaxreturn('{% url 'comuns:novo_projeto' %}')" data-toggle="modal" data-target="#Modal"> Novo Projeto </button>
+<!-- Modal -->
+
+<div id="Success">
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog-centered modal-dialog" role="document">
+    <div class="modal-content">
+      
+    <div id="aviso">
+
+	</div>
+    </div>
+</div>
+</div>
+</div>
+
+{% endblock content %}

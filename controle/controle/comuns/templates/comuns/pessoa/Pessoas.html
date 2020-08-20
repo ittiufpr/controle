@@ -41,7 +41,7 @@
       <td ><a href="{% url 'comuns:editar_pessoa' pessoa.cpf %}">{{ pessoa.cpf | cpf_format}}</a></td> 
       <td>{{pessoa.email}}</td>
       <td><button type="button" class="btn btn-primary delete btn-sm btn-danger" style="font-size:10px" onclick="ajaxreturn('{% url 'comuns:delete_pessoa' pessoa.cpf %}')" data-toggle="modal" data-target="#ModalPessoa"> Delete</button>
-      <button type="button" class="btn btn-primary btn-sm" style="font-size:10px" onclick="ajaxreturn('{% url 'comuns:editar_pessoa' pessoa.cpf %}')" data-toggle="modal" data-target="#ModalPessoa"> Editar</button></td>
+      <button type="button" class="btn btn-primary btn-sm nova-pessoa" style="font-size:10px" onclick="ajaxreturn('{% url 'comuns:editar_pessoa' pessoa.cpf %}')" data-toggle="modal" data-target="#ModalPessoa"> Editar</button></td>
       
       </td>
     </tr>

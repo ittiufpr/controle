@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento
+from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento, Emprestimo, Devolucao
 
 class CategoriaForm(forms.ModelForm):
 	class Meta:
@@ -120,3 +120,58 @@ class ItemEquipamentoForm(forms.ModelForm):
 					'valor'
 					 
 				]
+
+
+def getListItensDisponiveis():
+	itens = Item.objects.all()
+	item_list = []
+	for item in itens:
+		if item.status_emprestado is False:
+			item_list.append(item.id_item)
+	return item_list
+
+class ItemModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+    	item = Item.objects.get(id_item=obj.id_item)
+    	return str(item.id_item) + ' ' + item.nome
+
+
+class EmprestimoForm(forms.ModelForm):
+	#Dinamico - atualiza modelchoicefield
+	def __init__(self, *args, **kwargs):
+		super(EmprestimoForm, self).__init__(*args, **kwargs)
+		self.fields['id_item'].queryset = Item.objects.filter(id_item__in=getListItensDisponiveis())
+
+	class Meta:
+		model = Emprestimo
+		fields = '__all__'
+
+	id_item = ItemModelChoiceField(required=False, widget=forms.Select, queryset = Item.objects.none())
+
+
+
+def getListEmprestimoPendentes():
+	devolucoes = Devolucao.objects.all()
+	devolucoes_list =[]
+	for devolucao in devolucoes:
+		devolucoes_list.append(devolucao.emprestimo.pk)
+	return devolucoes_list
+
+
+class EmprestimoModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+    	emprestimo = Emprestimo.objects.get(pk=obj.pk)
+    	return str(emprestimo.id_item.nome) + ' ' + emprestimo.cpf.nome
+
+
+class DevolucaoForm(forms.ModelForm):
+	#Dinamico - atualiza modelchoicefield
+	def __init__(self, *args, **kwargs):
+		super(DevolucaoForm, self).__init__(*args, **kwargs)
+		self.fields['emprestimo'].queryset = Emprestimo.objects.all().exclude(pk__in=getListEmprestimoPendentes())
+
+	class Meta:
+		model = Devolucao
+		fields = '__all__'
+
+	emprestimo = EmprestimoModelChoiceField(required=False, widget=forms.Select, queryset = Emprestimo.objects.none())

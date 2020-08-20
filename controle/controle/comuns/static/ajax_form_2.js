@@ -1,14 +1,13 @@
-$(document).on("click", "#form", function() {
+$(document).on("click", ".submit", function() {
 
-  $("#form").on("submit", function(event){
-    event.preventDefault();
-	var post_url = $(this).attr("action");
-	var request_method = $(this).attr("method");
-	var form_data = $(this).serialize();
+  $("#form").submit(function(event){
+    event.preventDefault();//cancela o envio padrao
+	var post_url = $(this).attr("action"); //pega a url do formulario
+	var request_method = $(this).attr("method"); //pega o metodo POST ou GET
+	var form_data = $(this).serialize();//serializa os dados do formulario
 	console.log(post_url, request_method, form_data)
 
     $.ajax({
-      //headers: { "X-CSRFToken": $("#form").attr('data-token')},
         type: request_method,
         url: post_url,
         beforeSend: function(xhr, settings) {

@@ -1,0 +1,90 @@
+{% extends "controles/base.html" %}
+{% load static %}
+{% load custom_filter %}
+
+{% block header %}
+
+<script src="{% static 'ajax_form_2.js' %}"></script>
+
+<h1 class="display-4 text-center" style="padding: 20px;">Outorgado</h1>
+
+{% endblock header %}
+
+{% block content %}
+
+
+<table id ="example"  class="table" style="width:100%;text-align:center" data-itens-equipamento-url="">
+  <thead>
+    <th onclick="sortTable(0)">
+      Nome
+    </th>
+    
+    <th onclick="sortTable(1)" >
+      CPF
+    </th>
+
+    <th>    
+      Item   
+    </th> 
+
+        <th>    
+      Data   
+    </th> 
+        <th>    
+      Ações  
+    </th> 
+     
+     
+  </thead>
+
+  <tbody>
+
+    {% for emprestimo in emprestimos %}
+    <tr class="data">
+      <td >{{ emprestimo.cpf.nome | title}}</td>
+      <td >{{ emprestimo.cpf.cpf | cpf_format}}</td> 
+      <td>{{emprestimo.id_item}}</td>
+      <td>{{emprestimo.data_emprestimo}}</td>
+      <td><button type="button" class="btn btn-primary delete btn-sm btn-danger" style="font-size:10px" onclick="" data-toggle="modal" data-target="#Modal"> Delete</button>
+      <button type="button" class="btn btn-primary btn-sm nova-pessoa" style="font-size:10px" onclick="ajax" data-toggle="modal" data-target="#Modal"> Editar</button>
+      <button type="button" class="btn btn-secondary btn-sm nova-pessoa"  onclick="location.href='{% url 'controles:pdf_view_item' emprestimo.pk %}';" value="Go to Google" /> Termo</button></td>
+      
+      </td>
+    </tr>
+
+
+    {% empty %}
+    	<p>Não tem nenhum emprestimo cadastrado ainda.</p>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+<button type="button" class="btn btn-outline-success"  onclick="ajaxreturn('{% url 'controles:novo_emprestimo' %}')" data-toggle="modal" data-target="#Modal"> Novo Emprestimo </button>
+
+
+
+<!-- Modal -->
+
+<div id="Success">
+<div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog-centered modal-dialog" role="document">
+    <div class="modal-content">
+      
+    <div id="aviso">
+
+	</div>
+    </div>
+</div>
+</div>
+</div>
+
+{% endblock content %}
+
+
+
+
+
+
+
+

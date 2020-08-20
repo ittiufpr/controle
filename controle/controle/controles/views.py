@@ -4,12 +4,12 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
 #import Models
-from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento
+from .models import Categoria, Subcategoria, NotaFiscal, Manual, Item, Equipamento, Emprestimo, Devolucao
 
 #import Model Comuns
 from comuns.models import Projeto, Departamento
 
-from .forms import CategoriaForm, SubcategoriaForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm, ItemEquipamentoForm
+from .forms import CategoriaForm, SubcategoriaForm, NotaFiscalForm, ManualForm, ItemForm, EquipamentoForm, ItemEquipamentoForm, EmprestimoForm, DevolucaoForm
 
 #pdf imports
 from django.template.loader import get_template, render_to_string
@@ -29,6 +29,7 @@ import time
 from django.db.models.signals import post_save
 
 from django.http import JsonResponse
+import json
 
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
@@ -109,6 +110,23 @@ def pdf_view(request, *args, **kwargs):
 		equipamento_dict = {entry for entry in equipamentos}
 		pdf = render_to_pdf('controles/pdf_template_exemplo.html', data)
 		return HttpResponse(pdf, content_type = 'application/pdf')
+
+def pdf_view_item(request, emprestimo_id):
+	emprestimo = Emprestimo.objects.get(pk=emprestimo_id)
+
+	data = {
+			"patrimonio":emprestimo.id_item.id_item,
+			"quantidade":emprestimo.id_item.quantidade,
+			"itens":'',
+			"equipamento":emprestimo.id_item,
+			"usuario":emprestimo.cpf.nome,
+			"cpf":emprestimo.cpf.cpf,
+			"date": emprestimo.data_emprestimo,
+			"tecnico":emprestimo.cpf_func.nome
+	}
+
+	pdf = render_to_pdf('controles/pdf_template_item.html', data)
+	return HttpResponse(pdf, content_type = 'application/pdf')
 
 
 def DownloadPDF(request, *args, **kwargs):
@@ -624,3 +642,94 @@ def etiqueta(request, equipamento_id):
 
 	#Manda renderizar a etiqueta
 	return render (request, 'controles/etiqueta/etiqueta.html', context)
+
+
+
+############### Emprestimos #############
+@login_required
+def emprestimos(request):
+	""" Mostra todos os emprestimos """
+	emprestimos = Emprestimo.objects.all()
+	context = {'emprestimos': emprestimos}
+	return render(request, 'controles/emprestimo/emprestimos.html', context)
+
+
+
+@login_required
+def novo_emprestimo(request):
+	"""Adiciona um novo emprestimo de item"""
+	data = {}
+	if request.method != 'POST':
+			#Nenhum dado submetido; cria um formulário em branco
+		form = EmprestimoForm()
+	else:
+		#Dado de POST submetidos; processa os dados
+		form = EmprestimoForm(request.POST)
+		if form.is_valid():
+			try:
+
+				emprestimo = form.save(commit=False)
+
+				#atualiza o item como emprestado
+				item = Item.objects.get(id_item=emprestimo.id_item.id_item)
+				item.status_emprestado = True
+				item.save()
+
+				emprestimo.save()
+
+				data['stat'] = "OK";
+				return HttpResponse(json.dumps(data), content_type='application/json')
+			except IntegrityError as e:
+				print(e)
+		else:
+			context = {'form': form}
+			return render(request, 'controles/emprestimo/novo_emprestimo.html', context)
+
+	context = {'form':form}
+
+	return render(request, 'controles/emprestimo/novo_emprestimo.html', context)
+
+
+############### Devolução ################
+
+@login_required
+def devolucoes(request):
+	""" Mostra todos os devolucoes """
+	devolucoes = Devolucao.objects.all()
+	context = {'devolucoes': devolucoes}
+	return render(request, 'controles/devolucao/devolucoes.html', context)
+
+
+@login_required
+def nova_devolucao(request):
+	"""Adiciona um novo emprestimo de item"""
+	data = {}
+	if request.method != 'POST':
+			#Nenhum dado submetido; cria um formulário em branco
+		form = DevolucaoForm()
+	else:
+		#Dado de POST submetidos; processa os dados
+		form = DevolucaoForm(request.POST)
+		if form.is_valid():
+			try:
+
+				devolucao = form.save(commit=False)
+
+				#atualiza o item como devolvido
+				item = Item.objects.get(id_item=devolucao.emprestimo.id_item.id_item)
+				item.status_emprestado = False
+				item.save()
+
+				devolucao.save()
+
+				data['stat'] = "OK";
+				return HttpResponse(json.dumps(data), content_type='application/json')
+			except IntegrityError as e:
+				print(e)
+		else:
+			context = {'form': form}
+			return render(request, 'controles/devolucao/nova_devolucao.html', context)
+
+	context = {'form':form}
+
+	return render(request, 'controles/devolucao/nova_devolucao.html', context)

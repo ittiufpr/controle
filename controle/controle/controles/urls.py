@@ -67,6 +67,13 @@ urlpatterns = [
 
 	url(r'^ajax/itensByName/$', views.itensByName, name='itensByName'),
 
+	url(r'^emprestimos/$', views.emprestimos, name='emprestimos'),
+	url(r'^novo_emprestimo/', views.novo_emprestimo, name='novo_emprestimo'),
+	url(r'^pdf_view_item/(?P<emprestimo_id>\d+)$', views.pdf_view_item, name='pdf_view_item'),
+
+	url(r'^devolucoes/$', views.devolucoes, name='devolucoes'),
+	url(r'^nova_devolucao/', views.nova_devolucao, name='nova_devolucao'),
+    
 ]
 
 if settings.DEBUG:

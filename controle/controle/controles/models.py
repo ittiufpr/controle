@@ -102,13 +102,18 @@ class Laudo(models.Model):
 
 class Emprestimo(models.Model):
     cpf             = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT)
-    id_item         = models.ForeignKey(Item, on_delete=models.PROTECT)
+    id_item         = models.ForeignKey(Item, on_delete=models.PROTECT, blank=False)
     data_emprestimo = models.DateField(default=timezone.now)
     cpf_func        = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT, related_name='%(class)s_cpf_funcionario')
 
+    def __str__(self):
+        return self.cpf.nome + ' | ' +self.id_item.nome + ' ' + str(self.data_emprestimo)
 
 class Devolucao(models.Model):
     emprestimo     = models.OneToOneField(Emprestimo, primary_key = True, on_delete=models.CASCADE)
     cpf_func       = models.ForeignKey('comuns.Pessoa', on_delete=models.PROTECT)
     data_devolucao = models.DateField(default=timezone.now)
     laudo          = models.ForeignKey(Laudo, on_delete=models.PROTECT, blank=True, null=True)
+
+    def __str__(self):
+        return self.emprestimo.cpf.nome + ' ' + self.emprestimo.id_item.nome + ' ' + str(self.data_devolucao)

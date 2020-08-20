@@ -1,7 +1,0 @@
-<form action="{% url 'comuns:novo_projeto' %}" method='post'>
-
-	{% csrf_token %}
-	{{ form.as_p }}
-	<button name="submit">Adicionar Projeto</button>
-
-</form>
